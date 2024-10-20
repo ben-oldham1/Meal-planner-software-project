@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Create recipe
+{% endblock %}
+
+{% block maincontent %}
+<div class="row">
+    <div class="col-md-4">
+
+        <h1>Edit Recipe: {{ recipe.name }}</h1>
+
+        <h2 class="h4">Tags</h2>
+        <ul id="tag-list">
+            {% for tag in recipe.tags.all %}
+            <li>{{ tag.tag.name }}</li>
+            {% endfor %}
+        </ul>
+
+
+        <h2 class="h4">Add Tag</h2>
+        <form id="tag-form" method="POST" hx-post="{% url 'add_tag' recipe.id %}" hx-target="#tag-list"
+            hx-swap="beforeend">
+            {% csrf_token %}
+            <input type="text" name="name" placeholder="Tag Name" required>
+            <button type="submit">Add Tag</button>
+        </form>
+
+    </div>
+    <div class="col-md-8">
+
+        <div class="mb-5">
+            <h2 class="h4">Ingredients</h2>
+            <table class="table table-light">
+                <tbody id="ingredient-list">
+                    {% for ingredient in recipe.recipe_ingredients.all %}
+                    <tr>
+                        <th>{{ingredient.measurement_amount}}
+                            {{ingredient.ingredient.get_measurement_unit_display}}
+                        </th>
+                        <td>{{ingredient.ingredient.name}}</td>
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+                        No ingredients found for this recipe
+                    </tr>
+
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <!-- Add these forms below the recipe form -->
+            <h2 class="h4">Add Ingredient</h2>
+            <form id="ingredient-form" method="POST" hx-post="{% url 'add_ingredient' recipe.id %}"
+                hx-target="#ingredient-list" hx-swap="beforeend">
+                {% csrf_token %}
+                <select name="ingredient">
+                    <!-- Populate with existing ingredients -->
+                    {% for ingredient in ingredients %}
+                    <option value="{{ ingredient.id }}">{{ ingredient.name }}</option>
+                    {% endfor %}
+                </select>
+                <input type="number" name="measurement_amount" placeholder="Amount" required>
+                <input type="number" name="calories" placeholder="Calories" required>
+                <input type="number" name="fat" placeholder="Fat (g)" required>
+                <input type="number" name="carbs" placeholder="Carbs (g)" required>
+                <input type="number" name="protein" placeholder="Protein (g)" required>
+                <button type="submit">Add Ingredient</button>
+            </form>
+        </div>
+
+        <div class="mb-5">
+            <h2 class="h4">Recipe info</h2>
+            <form method="POST">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+                <a href="{% url 'recipe_detail' recipe.id %}" class="btn btn-outline-danger">Cancel</a>
+            </form>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
