@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}
+View mealplan
+{% endblock %}
+
+{% block maincontent %}
+<div class="row">
+    <h2>Meal plan</h2>
+</div>
+
+<div class="row">
+    {% for day in weekdays %}
+    <div class="col-md-3">
+        <div class="row">
+            <h2 class="h4">{{day.1}}</h2>
+        </div>
+        <div class="row">
+
+        </div>
+    </div>
+
+    {% endfor %}
+</div>
+
+<div class="row mt-5">
+    {% for item in mealplanitems %}
+
+    <div class="col-md-3">
+        <div class="card">
+            {% if item.recipe.image_url %}
+            <img src="{{ item.recipe.image_url }}" class="card-img-top" alt="{{ item.recipe.name }}">
+            {% endif %}
+            <div class="card-body">
+                <a href="{% url 'recipe_detail' item.recipe.id %}"
+                    class="link-dark link-underline-opacity-0 link-underline-opacity-25-hover">
+                    <h5 class="card-title">{{ item.recipe.name }}</h5>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    {% empty %}
+
+    <p>No recipes in this mealplan yet!</p>
+
+    {% endfor %}
+</div>
+
+{% endblock %}

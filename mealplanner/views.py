@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseForbidden
 
-from .models import Recipe, IngredientInRecipe, Ingredient, RecipeTag, Tag
+from .models import Recipe, IngredientInRecipe, Ingredient, RecipeTag, Tag, MealPlan, MealPlanItem
 from .forms import RecipeForm, IngredientForm, TagForm
 
 def recipe_list(request):
@@ -129,3 +129,45 @@ def add_tag(request, recipe_id):
         }
 
         return render(request, 'mealplanner/tag_item.html', context)
+
+# Meal plan views
+@login_required
+def mealplan_list(request):
+    mealplans = MealPlan.objects.filter(user=request.user)
+
+    context = {
+        'mealplans': mealplans,
+    }
+
+    return render(request, 'mealplanner/mealplan_list.html', context)
+
+@login_required
+def mealplan_detail(request, mealplan_id):
+    # Fetch the recipe or return a 404 if it doesn't exist
+    mealplan = get_object_or_404(MealPlan, id=mealplan_id)
+    
+    # Ensure the user can only view their own recipes or public ones
+    if mealplan.user != mealplan.user:
+        return HttpResponseForbidden("You are not allowed to view this meal plan.")
+    
+    # Get the ingredients associated with this recipe
+    mealplanitems = MealPlanItem.objects.filter(meal_plan=mealplan_id)
+
+    WEEKDAY_CHOICES = [
+        (0, 'Monday'),
+        (1, 'Tuesday'),
+        (2, 'Wednesday'),
+        (3, 'Thursday'),
+        (4, 'Friday'),
+        (5, 'Saturday'),
+        (6, 'Sunday'),
+    ]
+
+    context = {
+        'mealplan': mealplan,
+        'mealplanitems': mealplanitems,
+        'weekdays': WEEKDAY_CHOICES
+    }
+
+    # Pass the recipe and its ingredients to the template
+    return render(request, 'mealplanner/mealplan_detail.html', context)

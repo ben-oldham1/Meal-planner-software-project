@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block title %}
+View mealplans
+{% endblock %}
+
+{% block maincontent %}
+<div class="row my-3">
+    <div class="col-md-12">
+
+        <div class="row">
+            {% for mealplan in mealplans %}
+            <div class="col-3">
+                <a href="{% url 'mealplan_detail' mealplan.id %}" class="link-dark link-underline-opacity-0">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ mealplan.name }}</h5>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            {% empty %}
+
+            <p>You haven't created any mealplans yet!</p>
+
+            {% endfor %}
+        </div>
+
+
+    </div>
+
+</div>
+{% endblock %}
