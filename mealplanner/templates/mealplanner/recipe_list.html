@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %}
+View recipes
+{% endblock %}
+
+{% block maincontent %}
+<div class="row my-3">
+
+    <div class="col-md-3">
+
+        <p>Filter</p>
+
+    </div>
+
+    <div class="col-md-9">
+
+        <div class="row mb-3">
+            <div class="col-12">
+                <form class="d-flex" role="search">
+                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                    <button class="btn btn-info" type="submit">Search</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="row">
+
+            {% for recipe in recipes %}
+
+            <div class="col-md-4">
+
+                <div class="card">
+                    {% if recipe.image_url %}
+                    <img src="{{ recipe.image_url }}" class="card-img-top" alt="{{ recipe.name }}">
+                    {% endif %}
+                    <div class="card-body">
+                        <a href="{% url 'recipe_detail' recipe.id %}">
+                            <h5 class="card-title">{{ recipe.name }}</h5>
+                        </a>
+
+                        <h6 class="card-subtitle">{{ recipe.get_difficulty_display }}</h6>
+                        <p>
+                            <i class="bi bi-tag"></i>
+                            {% if recipe.tags.all %}
+                            {{ recipe.tags.all|join:", " }}
+                            {% else %}
+                            No tags
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+            </li>
+            {% empty %}
+            <li>No recipes available.</li>
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

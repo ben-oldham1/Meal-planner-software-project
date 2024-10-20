@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}
+View recipe
+{% endblock %}
+
+{% block maincontent %}
+<div class="row">
+
+    <div class="col-md-4">
+        {% if recipe.image_url %}
+        <img src="{{ recipe.image_url }}" class="img-fluid w-100 rounded" alt="{{ recipe.name }}">
+        {% endif %}
+
+        <h1>{{ recipe.name }}</h1>
+        <p><strong>Difficulty:</strong> {{ recipe.get_difficulty_display }}</p>
+        <p><strong>Time needed:</strong> {{ recipe.time_needed }}</p>
+        <p><strong>Public:</strong> {{ recipe.public|yesno:"Yes,No" }}</p>
+
+        <h2>Ingredients</h2>
+
+        <table class="table table-light">
+            <tbody>
+                {% for ingredient in ingredients %}
+
+                <tr>
+                    <th>{{ ingredient.measurement_amount }} {{ ingredient.ingredient.get_measurement_unit_display }}
+                    </th>
+                    <td>{{ingredient.ingredient.name}}</td>
+                </tr>
+
+                {% empty %}
+
+                <tr>
+                    No ingredients found for this recipe
+                </tr>
+
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+
+    <div class="col-md-8">
+
+        <h2>Method</h2>
+        <p>{{ recipe.instructions }}</p>
+
+    </div>
+
+</div>
+{% endblock %}
