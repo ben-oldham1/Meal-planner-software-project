@@ -24,23 +24,22 @@ View recipes
             </div>
         </div>
 
-        <div class="row">
+        <div class="row gy-3">
 
             {% for recipe in recipes %}
 
             <div class="col-md-4">
-
                 <div class="card">
                     {% if recipe.image_url %}
                     <img src="{{ recipe.image_url }}" class="card-img-top" alt="{{ recipe.name }}">
                     {% endif %}
                     <div class="card-body">
-                        <a href="{% url 'recipe_detail' recipe.id %}">
+                        <a href="{% url 'recipe_detail' recipe.id %}"
+                            class="link-dark link-underline-opacity-0 link-underline-opacity-25-hover">
                             <h5 class="card-title">{{ recipe.name }}</h5>
                         </a>
 
-                        <h6 class="card-subtitle">{{ recipe.get_difficulty_display }}</h6>
-                        <p>
+                        <p class="card-text">
                             <i class="bi bi-tag"></i>
                             {% if recipe.tags.all %}
                             {{ recipe.tags.all|join:", " }}
@@ -50,11 +49,12 @@ View recipes
                         </p>
                     </div>
                 </div>
-
             </div>
-            </li>
+
             {% empty %}
-            <li>No recipes available.</li>
+
+            <p>No recipes available.</p>
+
             {% endfor %}
 
         </div>
