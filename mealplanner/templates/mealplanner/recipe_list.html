@@ -17,38 +17,49 @@ View recipes
 
         <div class="row mb-3">
             <div class="col-12">
-                <form class="d-flex" role="search">
-                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                <form class="d-flex" role="search" method="GET" action="{% url 'recipe_list' %}">
+                    <input class="form-control me-2" type="search" name="q" placeholder="Search" aria-label="Search">
                     <button class="btn btn-info" type="submit">Search</button>
                 </form>
+
             </div>
         </div>
 
         <div class="row gy-3">
 
+            <div>
+                {% if query %}
+                <p class="d-inline me-3 h5">You searched for <strong>{{ query }}</strong></p>
+                {% endif %}
+
+                {% if query %}
+                <a href="{% url 'recipe_list' %}">Clear search</a>
+                {% endif %}
+            </div>
+
             {% for recipe in recipes %}
 
             <div class="col-md-4">
-                <div class="card">
-                    {% if recipe.image_url %}
-                    <img src="{{ recipe.image_url }}" class="card-img-top" alt="{{ recipe.name }}">
-                    {% endif %}
-                    <div class="card-body">
-                        <a href="{% url 'recipe_detail' recipe.id %}"
-                            class="link-dark link-underline-opacity-0 link-underline-opacity-25-hover">
+                <a href="{% url 'recipe_detail' recipe.id %}"
+                    class="link-dark link-underline-opacity-0 link-underline-opacity-25-hover link-offset-2">
+                    <div class="card">
+                        {% if recipe.image_url %}
+                        <img src="{{ recipe.image_url }}" class="card-img-top" alt="{{ recipe.name }}">
+                        {% endif %}
+                        <div class="card-body">
                             <h5 class="card-title">{{ recipe.name }}</h5>
-                        </a>
 
-                        <p class="card-text">
-                            <i class="bi bi-tag"></i>
-                            {% if recipe.tags.all %}
-                            {{ recipe.tags.all|join:", " }}
-                            {% else %}
-                            No tags
-                            {% endif %}
-                        </p>
+                            <p class="card-text">
+                                <i class="bi bi-tag"></i>
+                                {% if recipe.tags.all %}
+                                {{ recipe.tags.all|join:", " }}
+                                {% else %}
+                                No tags
+                                {% endif %}
+                            </p>
+                        </div>
                     </div>
-                </div>
+                </a>
             </div>
 
             {% empty %}
