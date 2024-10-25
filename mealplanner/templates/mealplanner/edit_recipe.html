@@ -29,7 +29,7 @@ Create recipe
             {% csrf_token %}
             <div class="input-group mb-3">
                 <input type="text" name="name" class="form-control" placeholder="Tag Name" required>
-                <button type="submit" class="btn btn-outline-secondary">Add Tag</button>
+                <button type="submit" class="btn btn-primary">Add Tag</button>
             </div>
         </form>
     </div>
@@ -40,14 +40,22 @@ Create recipe
             <table class="table table-light">
                 <tbody id="ingredient-list">
                     {% for ingredient in recipe.recipe_ingredients.all %}
-                    <tr>
-                        <th>{{ingredient.measurement_amount}} {{ingredient.ingredient.get_measurement_unit_display}}
+                    <tr id="ingredient-{{ ingredient.id }}">
+                        <th>{{ ingredient.measurement_amount }} {{ ingredient.ingredient.get_measurement_unit_display }}
                         </th>
-                        <td>{{ingredient.ingredient.name}}</td>
+                        <td>{{ ingredient.ingredient.name }}</td>
+                        <td>
+                            <button hx-delete="{% url 'delete_ingredient' ingredient.id %}"
+                                hx-target="#ingredient-{{ ingredient.id }}" hx-swap="outerHTML"
+                                hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' class="btn btn-outline-danger btn-sm">
+                                Remove
+                            </button>
+                        </td>
                     </tr>
+
                     {% empty %}
                     <tr>
-                        <td colspan="2" class="text-center">No ingredients found for this recipe</td>
+                        <td colspan="3" class="text-center">No ingredients found for this recipe</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -71,7 +79,7 @@ Create recipe
                 </div>
 
                 <div class="input-group mb-3">
-                    <button type="submit" class="btn btn-secondary">Calculate</button>
+                    <button type="submit" class="btn btn-outline-secondary">Calculate</button>
 
                     <input type="number" name="calories" class="form-control" placeholder="Calories (kcal)" required>
                     <input type="number" name="fat" class="form-control" placeholder="Fat (g)" required>

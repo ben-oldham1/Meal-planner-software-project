@@ -1,5 +1,12 @@
-<tr>
+<tr id="ingredient-{{ ingredient.id }}">
     <th>{{ ingredient.measurement_amount }} {{ ingredient.ingredient.get_measurement_unit_display }}
     </th>
-    <td>{{ingredient.ingredient.name}}</td>
+    <td>{{ ingredient.ingredient.name }}</td>
+    <td>
+        <button hx-delete="{% url 'delete_ingredient' ingredient.id %}" hx-target="#ingredient-{{ ingredient.id }}"
+            hx-swap="outerHTML" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+            class="btn btn-outline-danger btn-sm btn-sm">
+            Remove
+        </button>
+    </td>
 </tr>
