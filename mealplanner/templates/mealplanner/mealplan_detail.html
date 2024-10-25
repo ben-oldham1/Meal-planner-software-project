@@ -5,6 +5,7 @@ View mealplan
 {% endblock %}
 
 {% block maincontent %}
+
 <div class="row">
     <h2>Meal plan</h2>
 </div>
@@ -32,9 +33,10 @@ View mealplan
             <img src="{{ item.recipe.image_url }}" class="card-img-top" alt="{{ item.recipe.name }}">
             {% endif %}
             <div class="card-body">
+                <h5 class="card-title">{{ item.recipe.name }}</h5>
                 <a href="{% url 'recipe_detail' item.recipe.id %}"
                     class="link-dark link-underline-opacity-0 link-underline-opacity-25-hover">
-                    <h5 class="card-title">{{ item.recipe.name }}</h5>
+                    View recipe
                 </a>
             </div>
         </div>
