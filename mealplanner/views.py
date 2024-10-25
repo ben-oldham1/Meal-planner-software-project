@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseForbidden
+from django.db.models import Q
 
 from .models import Recipe, IngredientInRecipe, Ingredient, RecipeTag, Tag, MealPlan, MealPlanItem
 from .forms import RecipeForm, IngredientForm, TagForm
@@ -8,10 +9,32 @@ from .forms import RecipeForm, IngredientForm, TagForm
 def recipe_list(request):
     # Only show public recipes to non-logged in users
     if request.user.is_authenticated:
-        recipes = Recipe.objects.filter(user=request.user)
+        recipes = Recipe.objects.filter(user=request.user) | Recipe.objects.filter(public=True)
     else:
         recipes = Recipe.objects.filter(public=True)
+    
+    query = request.GET.get('q')
 
+    if query:
+        # Filter recipes based on search term in the name field
+        recipes = recipes.filter(
+            Q(name__icontains=query) | Q(instructions__icontains=query)
+        ).distinct()
+
+    context = {
+        'recipes': recipes,
+        'query': query,
+    }
+
+    return render(request, 'mealplanner/recipe_list.html', context)
+
+def recipe_search(request, search_query):
+    # Only show public recipes to non-logged in users
+    if request.user.is_authenticated:
+        recipes = Recipe.objects.filter(user=request.user) | Recipe.objects.filter(public=True)
+        recipes = recipes.filter(name=search_query)
+    else:
+        recipes = Recipe.objects.filter(public=True).filter(name=search_query)
 
     context = {
         'recipes': recipes,
@@ -108,6 +131,16 @@ def add_ingredient(request, recipe_id):
         }
 
         return render(request, 'mealplanner/ingredient_item.html', context)
+
+@login_required
+def delete_ingredient(request, ingredient_id):
+    ingredient_in_recipe = get_object_or_404(IngredientInRecipe, id=ingredient_id)
+
+    if ingredient_in_recipe.recipe.user != request.user:
+        return HttpResponseForbidden("You are not allowed to delete ingredients from this recipe.")
+
+    ingredient_in_recipe.delete()
+    return HttpResponse(status=200)  # Empty response with status 204
 
 @login_required
 def add_tag(request, recipe_id):
