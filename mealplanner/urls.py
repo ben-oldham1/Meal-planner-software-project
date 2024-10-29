@@ -12,4 +12,5 @@ urlpatterns = [
     path('recipes/<int:recipe_id>/add_tag/', views.add_tag, name='add_tag'),
     path('mealplans/', views.mealplan_list, name='mealplan_list'),
     path('mealplans/<int:mealplan_id>/', views.mealplan_detail, name='mealplan_detail'),
+    path('mealplans/edit/<int:mealplan_id>/', views.mealplan_edit, name='mealplan_edit'),
 ]
