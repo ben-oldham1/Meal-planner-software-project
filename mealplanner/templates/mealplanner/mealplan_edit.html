@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block title %}
+View mealplan
+{% endblock %}
+
+{% block maincontent %}
+
+
+<div id="meal-plan-container" class="row row-gap-3">
+    {% for weekday_id, weekday_name in weekdays %}
+    <div class="col-6 col-md-3 col-xl-2 column d-flex flex-column gap-2" style="min-height: 300px;"
+        data-weekday="{{ weekday_id }}" ondrop="drop(event)" ondragover="allowDrop(event)">
+        <h3 class="pb-2 border-2 border-bottom">{{ weekday_name }}</h3>
+
+        {% for item in mealplanitems %}
+        {% if item.weekday == weekday_id %}
+        <div id="meal-{{ item.id }}" class="draggable card" draggable="true" ondragstart="drag(event)"
+            style="cursor: pointer;" data-id="{{ item.id }}" data-weekday="{{ weekday_id }}">
+            <div class="card-body">
+                <h5 class="card-title">
+                    {{ item.recipe.name }}
+                </h5>
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+
+    </div>
+    {% endfor %}
+</div>
+
+<button onclick="saveMealPlan()" class="btn btn-primary">Save</button>
+<a class="btn btn-outline-secondary" href="{% url 'mealplan_detail' mealplan.id %}">Leave edit mode</a>
+
+
+<script>
+    function allowDrop(event) {
+        event.preventDefault();
+    }
+
+    function drag(event) {
+        event.dataTransfer.setData("mealId", event.target.dataset.id);
+    }
+
+    function drop(event) {
+        event.preventDefault();
+        const mealId = event.dataTransfer.getData("mealId");
+        const newWeekday = event.target.closest('.column').dataset.weekday;
+        const mealDiv = document.getElementById("meal-" + mealId);
+        event.target.closest('.column').appendChild(mealDiv);
+        mealDiv.dataset.weekday = newWeekday;
+    }
+
+    function saveMealPlan() {
+        const mealData = [];
+        document.querySelectorAll('.draggable').forEach(item => {
+            mealData.push({
+                id: item.dataset.id,
+                weekday: item.dataset.weekday
+            });
+        });
+
+        fetch("{% url 'mealplan_edit' mealplan.id %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": "{{ csrf_token }}"
+            },
+            body: JSON.stringify({ meal_plan_items: mealData })
+        }).then(response => {
+            if (response.ok) {
+                alert("Mealplan saved");
+                location.reload();  // Reload to reflect changes if needed
+            } else {
+                alert("Failed to save meal plan.");
+            }
+        });
+    }
+</script>
+</div>
+
+{% endblock %}
