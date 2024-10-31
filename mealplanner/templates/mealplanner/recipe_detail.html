@@ -27,25 +27,51 @@ View recipe
 
         <h2>Ingredients</h2>
 
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addon1">Servings</span>
+            <input type="number" class="form-control" id="servings" value="1" min="1" oninput="scaleIngredients()">
+        </div>
+
         <table class="table table-light">
             <tbody>
                 {% for ingredient in ingredients %}
-
                 <tr>
-                    <th>{{ ingredient.measurement_amount }} {{ ingredient.ingredient.get_measurement_unit_display }}
+                    <!-- Store the original measurement amount as a data attribute -->
+                    <th data-original-amount="{{ ingredient.measurement_amount }}">
+                        <span class="scaled-amount">{{ ingredient.measurement_amount }}</span>
+                        {{ ingredient.ingredient.get_measurement_unit_display }}
                     </th>
-                    <td>{{ingredient.ingredient.name}}</td>
+                    <td>{{ ingredient.ingredient.name }}</td>
                 </tr>
-
                 {% empty %}
-
                 <tr>
-                    No ingredients found for this recipe
+                    <td colspan="2">No ingredients found for this recipe</td>
                 </tr>
-
                 {% endfor %}
             </tbody>
         </table>
+
+        <script>
+            function scaleIngredients() {
+                // Get the number of servings from the input
+                const servings = document.getElementById("servings").value;
+
+                // Select all elements with the class "scaled-amount"
+                const ingredients = document.querySelectorAll("th[data-original-amount]");
+
+                ingredients.forEach((ingredient) => {
+                    // Get the original amount from the data attribute
+                    const originalAmount = parseFloat(ingredient.getAttribute("data-original-amount"));
+
+                    // Calculate the new amount based on the servings
+                    const scaledAmount = (originalAmount * servings).toFixed(2); // Limit to 2 decimal places
+
+                    // Update the displayed amount
+                    ingredient.querySelector(".scaled-amount").textContent = scaledAmount;
+                });
+            }
+        </script>
+
 
         <h2>Method</h2>
         <p>{{ recipe.instructions }}</p>
