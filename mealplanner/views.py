@@ -24,6 +24,7 @@ def recipe_list(request):
         ).distinct()
 
     context = {
+        'active_path': 'recipes',
         'recipes': recipes,
         'query': query,
     }
@@ -39,6 +40,7 @@ def recipe_search(request, search_query):
         recipes = Recipe.objects.filter(public=True).filter(name=search_query)
 
     context = {
+        'active_path': 'recipes',
         'recipes': recipes,
     }
 
@@ -56,6 +58,7 @@ def recipe_detail(request, recipe_id):
     ingredients = IngredientInRecipe.objects.filter(recipe=recipe)
 
     context = {
+        'active_path': 'recipes',
         'recipe': recipe,
         'ingredients': ingredients
     }
@@ -94,6 +97,7 @@ def edit_recipe(request, recipe_id):
         form = RecipeForm(instance=recipe)
 
     context = {
+        'active_path': 'recipes',
         'form': form,
         'ingredients': ingredients,
         'recipe': recipe
@@ -171,6 +175,7 @@ def mealplan_list(request):
     mealplans = MealPlan.objects.filter(user=request.user)
 
     context = {
+        'active_path': 'mealplans',
         'mealplans': mealplans,
     }
 
@@ -199,6 +204,7 @@ def mealplan_detail(request, mealplan_id):
     ]
 
     context = {
+        'active_path': 'mealplans',
         'mealplan': mealplan,
         'mealplanitems': mealplanitems,
         'weekdays': WEEKDAY_CHOICES,
@@ -248,6 +254,7 @@ def mealplan_edit(request, mealplan_id):
         ]
 
         context = {
+            'active_path': 'mealplans',
             'mealplan': mealplan,
             'mealplanitems': mealplanitems,
             'weekdays': WEEKDAY_CHOICES,
