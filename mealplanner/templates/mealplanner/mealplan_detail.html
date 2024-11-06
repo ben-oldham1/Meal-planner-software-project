@@ -7,16 +7,75 @@ View mealplan
 {% block maincontent %}
 
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-12">
 
         <h2>{{mealplan.name}}</h2>
+    </div>
 
-        {% if request.user == mealplan.user %}
-        <a class="btn btn-outline-primary" href="{% url 'mealplan_edit' mealplan.id %}">Edit mealplan</a>
-        {% endif %}
+    <div class="col-sm-3 col-lg-2">
+        <div class="nav flex-column nav-pills me-3" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+            <button class="nav-link active" id="v-pills-home-tab" data-bs-toggle="pill" data-bs-target="#v-pills-home"
+                type="button" role="tab" aria-controls="v-pills-home" aria-selected="true">
+                <i class="bi bi-calendar3"></i> Weekly plan
+            </button>
+            <button class="nav-link" id="v-pills-profile-tab" data-bs-toggle="pill" data-bs-target="#v-pills-profile"
+                type="button" role="tab" aria-controls="v-pills-profile" aria-selected="false">
+                <i class="bi bi-activity"></i> Nutrition
+            </button>
+            <button class="nav-link" id="v-pills-shopping-tab" data-bs-toggle="pill" data-bs-target="#v-pills-shopping"
+                type="button" role="tab" aria-controls="v-pills-shopping" aria-selected="false">
+                <i class="bi bi-bag"></i> Shopping
+            </button>
+        </div>
+    </div>
 
-        <div class="row mt-3">
-            <div class="col-12">
+    <div class="col-sm-9 col-lg-10">
+
+        <div class="tab-content" id="v-pills-tabContent">
+            <div class="tab-pane fade show active" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab"
+                tabindex="0">
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <div class="row row-gap-3">
+                            {% for weekday_id, weekday_name in weekdays %}
+                            <div class="col-6 col-sm-4 col-lg-2 d-flex flex-column gap-3" style="min-height: 300px;">
+                                <h3 class="pb-2 border-2 border-bottom">{{ weekday_name }}</h3>
+
+                                {% for item in mealplanitems %}
+                                {% if item.weekday == weekday_id %}
+                                <div class="card">
+                                    {% if item.recipe.image_url %}
+                                    <img src="{{ item.recipe.image_url }}" class="card-img-top"
+                                        alt="{{ item.recipe.name }}">
+                                    {% endif %}
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ item.recipe.name }}</h5>
+                                        <a href="{% url 'recipe_detail' item.recipe.id %}"
+                                            class="link-dark link-underline-opacity-0 link-underline-opacity-25-hover">
+                                            View recipe
+                                        </a>
+                                    </div>
+                                </div>
+                                {% endif %}
+                                {% endfor %}
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        {% if request.user == mealplan.user %}
+                        <a class="btn btn-outline-primary" href="{% url 'mealplan_edit' mealplan.id %}">Edit
+                            mealplan</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab"
+                tabindex="0">
                 <h3>Weekly stats</h3>
 
                 <table class="table table-light">
@@ -50,61 +109,42 @@ View mealplan
                     </tbody>
                 </table>
             </div>
-        </div>
 
-        <div class="row mt-3">
-            <div class="col-12">
-                <h3>Shopping list</h3>
-            </div>
+            <div class="tab-pane fade" id="v-pills-shopping" role="tabpanel" aria-labelledby="v-pills-shopping-tab"
+                tabindex="0">
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <h3>Shopping list</h3>
+                    </div>
 
-            <div class="col-5">
-                <button class="btn btn-outline-primary">
-                    Email me
-                </button>
-            </div>
+                    <div class="col-5">
+                        <button class="btn btn-outline-primary">
+                            Email me
+                        </button>
+                    </div>
 
-            <div class="col-7">
-                <div class="input-group">
-                    <span class="input-group-text bg-white" id="basic-addon1">Servings</span>
-                    <input type="number" class="form-control" value="1">
-                </div>
-            </div>
+                    <div class="col-7">
+                        <div class="input-group">
+                            <span class="input-group-text bg-white" id="basic-addon1">Servings</span>
+                            <input type="number" class="form-control" value="1">
+                        </div>
+                    </div>
 
-            <div class="col-12">
-                <ul>
-                    <li>11 units chicken breast</li>
-                </ul>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-8">
-
-        <div class="row row-gap-3">
-            {% for weekday_id, weekday_name in weekdays %}
-            <div class="col-6 col-sm-4 col-lg-3 d-flex flex-column gap-3" style="min-height: 300px;">
-                <h3 class="pb-2 border-2 border-bottom">{{ weekday_name }}</h3>
-
-                {% for item in mealplanitems %}
-                {% if item.weekday == weekday_id %}
-                <div class="card">
-                    {% if item.recipe.image_url %}
-                    <img src="{{ item.recipe.image_url }}" class="card-img-top" alt="{{ item.recipe.name }}">
-                    {% endif %}
-                    <div class="card-body">
-                        <h5 class="card-title">{{ item.recipe.name }}</h5>
-                        <a href="{% url 'recipe_detail' item.recipe.id %}"
-                            class="link-dark link-underline-opacity-0 link-underline-opacity-25-hover">
-                            View recipe
-                        </a>
+                    <div class="col-12">
+                        <ul>
+                            <li>11 units chicken breast</li>
+                        </ul>
                     </div>
                 </div>
-                {% endif %}
-                {% endfor %}
             </div>
-            {% endfor %}
         </div>
-
     </div>
 
-    {% endblock %}
+</div>
+
+<div class="col-md-8">
+
+
+</div>
+
+{% endblock %}
