@@ -35,70 +35,99 @@ Create recipe
     </div>
     <div class="col-md-8">
 
-        <div class="mb-4">
-            <h2 class="h3">Ingredients</h2>
-            <p>For 1 serving</p>
-            <table class="table table-light">
-                <tbody id="ingredient-list">
-                    {% for ingredient in recipe.recipe_ingredients.all %}
-                    <tr id="ingredient-{{ ingredient.id }}">
-                        <th>{{ ingredient.measurement_amount }} {{ ingredient.ingredient.get_measurement_unit_display }}
-                        </th>
-                        <td>{{ ingredient.ingredient.name }}</td>
-                        <td>
-                            <button hx-delete="{% url 'delete_ingredient' ingredient.id %}"
-                                hx-target="#ingredient-{{ ingredient.id }}" hx-swap="outerHTML"
-                                hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' class="btn btn-outline-danger btn-sm">
-                                Remove
-                            </button>
-                        </td>
-                    </tr>
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane"
+                    type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">Ingredients</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane"
+                    type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">Recipe info</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact-tab-pane"
+                    type="button" role="tab" aria-controls="contact-tab-pane" aria-selected="false">Method
+                    (TBC)</button>
+            </li>
+        </ul>
+        <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab"
+                tabindex="0">
 
-                    {% empty %}
-                    <tr>
-                        <td colspan="3" class="text-center">No ingredients found for this recipe</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+                <div class="mb-4">
+                    <p>For 1 serving</p>
+                    <table class="table table-light">
+                        <tbody id="ingredient-list">
+                            {% for ingredient in recipe.recipe_ingredients.all %}
+                            <tr id="ingredient-{{ ingredient.id }}">
+                                <th>{{ingredient.measurement_amount}}
+                                    {{ingredient.ingredient.get_measurement_unit_display}}
+                                </th>
+                                <td>{{ingredient.ingredient.name}}</td>
+                                <td>
+                                    <button hx-delete="{% url 'delete_ingredient' ingredient.id %}"
+                                        hx-target="#ingredient-{{ ingredient.id }}" hx-swap="outerHTML"
+                                        hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                                        class="btn btn-outline-danger btn-sm">
+                                        Remove
+                                    </button>
+                                </td>
+                            </tr>
 
-        <div class="mb-5">
-            <h2 class="h5">Add Ingredient</h2>
-            <form id="ingredient-form" method="POST" hx-post="{% url 'add_ingredient' recipe.id %}"
-                hx-target="#ingredient-list" hx-swap="beforeend">
-                {% csrf_token %}
-                <div class="input-group mb-3">
-                    <select name="ingredient" class="form-select" required>
-                        <option value="">Select Ingredient</option>
-                        {% for ingredient in ingredients %}
-                        <option value="{{ ingredient.id }}">{{ ingredient.name }}
-                            ({{ingredient.get_measurement_unit_display}})</option>
-                        {% endfor %}
-                    </select>
-                    <input type="number" name="measurement_amount" class="form-control" placeholder="Amount" required>
+                            {% empty %}
+                            <tr>
+                                <td colspan="3" class="text-center">No ingredients found for this recipe</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
 
-                <div class="input-group mb-3">
-                    <button type="submit" class="btn btn-outline-secondary">Calculate</button>
+                <div class="mb-5">
+                    <h2 class="h5">Add Ingredient</h2>
+                    <form id="ingredient-form" method="POST" hx-post="{% url 'add_ingredient' recipe.id %}"
+                        hx-target="#ingredient-list" hx-swap="beforeend">
+                        {% csrf_token %}
+                        <div class="input-group mb-3">
+                            <select name="ingredient" class="form-select" required>
+                                <option value="">Select Ingredient</option>
+                                {% for ingredient in ingredients %}
+                                <option value="{{ ingredient.id }}">{{ ingredient.name }}
+                                    ({{ingredient.get_measurement_unit_display}})</option>
+                                {% endfor %}
+                            </select>
+                            <input type="number" name="measurement_amount" class="form-control" placeholder="Amount"
+                                required>
+                        </div>
 
-                    <input type="number" name="calories" class="form-control" placeholder="Calories (kcal)" required>
-                    <input type="number" name="fat" class="form-control" placeholder="Fat (g)" required>
-                    <input type="number" name="carbs" class="form-control" placeholder="Carbs (g)" required>
-                    <input type="number" name="protein" class="form-control" placeholder="Protein (g)" required>
+                        <div class="input-group mb-3">
+                            <button type="submit" class="btn btn-outline-secondary">Calculate</button>
+
+                            <input type="number" name="calories" class="form-control" placeholder="Calories (kcal)"
+                                required>
+                            <input type="number" name="fat" class="form-control" placeholder="Fat (g)" required>
+                            <input type="number" name="carbs" class="form-control" placeholder="Carbs (g)" required>
+                            <input type="number" name="protein" class="form-control" placeholder="Protein (g)" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add Ingredient</button>
+                    </form>
                 </div>
-                <button type="submit" class="btn btn-primary">Add Ingredient</button>
-            </form>
-        </div>
 
-        <div class="mb-5">
-            <h2 class="h3">Recipe info</h2>
-            <form method="POST" class="form">
-                {% csrf_token %}
-                {{ form|crispy }}
-                <button type="submit" class="btn btn-primary">Save Changes</button>
-                <a href="{% url 'recipe_detail' recipe.id %}" class="btn btn-outline-danger">Cancel</a>
-            </form>
+            </div>
+            <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
+                <div class="mb-5">
+                    <h2 class="h3">Recipe info</h2>
+                    <form method="POST" class="form">
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                        <a href="{% url 'recipe_detail' recipe.id %}" class="btn btn-outline-danger">Cancel</a>
+                    </form>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="contact-tab-pane" role="tabpanel" aria-labelledby="contact-tab" tabindex="0">
+                ...
+            </div>
         </div>
     </div>
 </div>
