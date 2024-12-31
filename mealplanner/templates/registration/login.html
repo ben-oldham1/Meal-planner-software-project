@@ -4,10 +4,6 @@
 
 {% block maincontent %}
 
-{% if form.errors %}
-<p>Your username and password didn't match. Please try again.</p>
-{% endif %}
-
 {% if next %}
 {% if user.is_authenticated %}
 <p>Your account doesn't have access to this page. To proceed,
@@ -17,24 +13,47 @@
 {% endif %}
 {% endif %}
 
-<form method="post" action="{% url 'login' %}">
-    {% csrf_token %}
-    <table>
-        <tr>
-            <td>{{ form.username.label_tag }}</td>
-            <td>{{ form.username }}</td>
-        </tr>
-        <tr>
-            <td>{{ form.password.label_tag }}</td>
-            <td>{{ form.password }}</td>
-        </tr>
-    </table>
+<main class="form-signin w-100 m-auto" style="max-width: 330px;">
+    <form method="post">
 
-    <input type="submit" value="login">
-    <input type="hidden" name="next" value="{{ next }}">
-</form>
+        {% load static %}
+        <div class="w-100 d-flex justify-content-center">
+            <img src="{% static 'Logo_1080.png' %}" class="w-50 mb-4" alt="Meal planner logo">
+        </div>
 
-{# Assumes you set up the password_reset view in your URLconf #}
-<p><a href="{% url 'password_reset' %}">Lost password?</a></p>
+        <h1 class="h4 mb-4 fw-normal text-center">Meal Planner</h1>
+
+        {% csrf_token %}
+
+
+        {% if form.errors %}
+        <div class="alert alert-danger" role="alert">
+            Your username and password didn't match. Please try again.
+        </div>
+        {% endif %}
+
+        <div class="mb-3">
+            <label class="form-label" for="id_username">Username:</label>
+            <input class="form-control" type="text" name="username" autofocus="" autocapitalize="none"
+                autocomplete="username" maxlength="150" required="" id="id_username">
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="id_password">Password:</label>
+            <input class="form-control" type="password" name="password" autocomplete="current-password" required=""
+                id="id_password">
+        </div>
+
+        <button class="w-100 btn btn-lg btn-primary mt-3 mb-3" type="submit">Log In</button>
+
+        <div class="text-center">
+            <p><a href="{% url 'password_reset' %}" class="link-secondary">Lost password?</a></p>
+            <p class="text-body-secondary">&copy; 2024 Meal Planner</p>
+        </div>
+
+
+    </form>
+</main>
+
 
 {% endblock %}
