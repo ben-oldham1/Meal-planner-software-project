@@ -1,4 +1,6 @@
 {% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load custom_filters %}
 
 {% block title %}
 View recipes
@@ -8,8 +10,19 @@ View recipes
 <div class="row my-3">
 
     <div class="col-md-3">
+        <h2 class="h4">Filter</h2>
 
-        <p>Filter</p>
+        <form method="GET">
+            {{ recipe_filter.form|crispy }}
+            <button class="btn btn-info" type="submit">Search</button>
+            <a href="{% url 'recipe_list' %}" class="btn btn-secondary">Clear filters</a>
+
+        </form>
+
+        <!-- New recipe modal -->
+        <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#new-recipe-modal">
+            <i class="bi bi-plus"></i> New recipe
+        </button>
 
     </div>
 
@@ -37,9 +50,10 @@ View recipes
                 {% endif %}
             </div>
 
+            <h2>My recipes</h2>
             {% for recipe in recipes %}
-
-            <div class="col-md-4">
+            {% if recipe.user == request.user %}
+            <div class="col-6 col-md-4 col-xxl-3">
                 <a href="{% url 'recipe_detail' recipe.id %}"
                     class="link-dark link-underline-opacity-0 link-underline-opacity-25-hover link-offset-2">
                     <div class="card">
@@ -48,6 +62,59 @@ View recipes
                         {% endif %}
                         <div class="card-body">
                             <h5 class="card-title">{{ recipe.name }}</h5>
+
+                            <div class="d-flex justify-content-between">
+                                <p class="card-text mb-1">
+                                    {{ recipe.get_difficulty_display }}
+                                </p>
+                                <p class="card-text mb-1">
+                                    {{ recipe.time_needed|humanise_duration }}
+                                </p>
+                            </div>
+
+                            <p class="card-text">
+                                <i class="bi bi-tag"></i>
+                                {% if recipe.tags.all %}
+                                {{ recipe.tags.all|join:", " }}
+                                {% else %}
+                                No tags
+                                {% endif %}
+                            </p>
+
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endif %}
+
+            {% empty %}
+
+            <p>No recipes available.</p>
+
+            {% endfor %}
+
+
+            <h2>Public recipes</h2>
+            {% for recipe in recipes %}
+            {% if recipe.user != request.user %}
+            <div class="col-6 col-md-4 col-xxl-3">
+                <a href="{% url 'recipe_detail' recipe.id %}"
+                    class="link-dark link-underline-opacity-0 link-underline-opacity-25-hover link-offset-2">
+                    <div class="card">
+                        {% if recipe.image_url %}
+                        <img src="{{ recipe.image_url }}" class="card-img-top" alt="{{ recipe.name }}">
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ recipe.name }}</h5>
+
+                            <div class="d-flex justify-content-between">
+                                <p class="card-text mb-1">
+                                    {{ recipe.get_difficulty_display }}
+                                </p>
+                                <p class="card-text mb-1">
+                                    {{ recipe.time_needed|humanise_duration }}
+                                </p>
+                            </div>
 
                             <p class="card-text">
                                 <i class="bi bi-tag"></i>
@@ -61,6 +128,7 @@ View recipes
                     </div>
                 </a>
             </div>
+            {% endif %}
 
             {% empty %}
 
@@ -72,5 +140,35 @@ View recipes
 
     </div>
 
+</div>
+{% endblock %}
+
+
+{% block modal %}
+<!-- New recipe modal -->
+<div class="modal fade" id="new-recipe-modal" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modal-title-2"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="modal-title-2">New recipe</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <form action="{% url 'add_recipe' %}" method="POST">
+                    {% csrf_token %}
+
+                    {{new_recipe_form|crispy}}
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">Create recipe</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}
