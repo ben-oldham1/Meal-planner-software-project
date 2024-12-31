@@ -7,39 +7,54 @@ View mealplan
 {% block maincontent %}
 
 <div class="row">
-    <div class="col-md-12">
-
-        <h2>{{mealplan.name}}</h2>
-    </div>
-
-    <div class="col-sm-3 col-lg-2">
-        <div class="nav flex-column nav-pills me-3" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-            <button class="nav-link active" id="v-pills-home-tab" data-bs-toggle="pill" data-bs-target="#v-pills-home"
-                type="button" role="tab" aria-controls="v-pills-home" aria-selected="true">
-                <i class="bi bi-calendar3"></i> Weekly plan
-            </button>
-            <button class="nav-link" id="v-pills-profile-tab" data-bs-toggle="pill" data-bs-target="#v-pills-profile"
-                type="button" role="tab" aria-controls="v-pills-profile" aria-selected="false">
-                <i class="bi bi-activity"></i> Nutrition
-            </button>
-            <button class="nav-link" id="v-pills-shopping-tab" data-bs-toggle="pill" data-bs-target="#v-pills-shopping"
-                type="button" role="tab" aria-controls="v-pills-shopping" aria-selected="false">
-                <i class="bi bi-bag"></i> Shopping
-            </button>
+    <div class="d-flex flex-row justify-content-between mb-2">
+        <div>
+            <h2>{{mealplan.name}}</h2>
         </div>
+
+        <div>
+            <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="pills-home-tab" data-bs-toggle="pill"
+                        data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home"
+                        aria-selected="true">
+                        <i class="bi bi-calendar3"></i> Weekly plan
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="pills-profile-tab" data-bs-toggle="pill"
+                        data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile"
+                        aria-selected="false">
+                        <i class="bi bi-activity"></i> Nutrition
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="pills-contact-tab" data-bs-toggle="pill"
+                        data-bs-target="#pills-contact" type="button" role="tab" aria-controls="pills-contact"
+                        aria-selected="false">
+                        <i class="bi bi-bag"></i> Shopping
+                    </button>
+                </li>
+            </ul>
+        </div>
+
     </div>
+</div>
 
-    <div class="col-sm-9 col-lg-10">
+<div class="row">
 
-        <div class="tab-content" id="v-pills-tabContent">
-            <div class="tab-pane fade show active" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab"
+    <div class="col-12">
+
+        <div class="tab-content" id="pills-tabContent">
+            <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab"
                 tabindex="0">
                 <div class="row mb-3">
                     <div class="col-12">
                         <div class="row row-gap-3">
                             {% for weekday_id, weekday_name in weekdays %}
-                            <div class="col-6 col-sm-4 col-lg-2 d-flex flex-column gap-3" style="min-height: 300px;">
-                                <h3 class="pb-2 border-2 border-bottom">{{ weekday_name }}</h3>
+                            <div class="col-6 col-sm-4 col-md-3 col-lg-2 d-flex flex-column gap-3"
+                                style="min-height: 300px;">
+                                <h3 class="pb-2 h4 border-2 border-bottom">{{ weekday_name }}</h3>
 
                                 {% for item in mealplanitems %}
                                 {% if item.weekday == weekday_id %}
@@ -74,43 +89,49 @@ View mealplan
                 </div>
             </div>
 
-            <div class="tab-pane fade" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab"
+            <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab"
                 tabindex="0">
-                <h3>Weekly stats</h3>
+                <div class="row">
+                    <h3>Weekly stats</h3>
 
-                <table class="table table-light">
-                    <thead>
-                        <tr>
-                            <th scope="col">Day</th>
-                            <th scope="col">Kcal</th>
-                            <th scope="col">Fat</th>
-                            <th scope="col">Protein</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <th scope="row">Monday</th>
-                            <td>1100</td>
-                            <td>78</td>
-                            <td>120</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">Tuesday</th>
-                            <td>1100</td>
-                            <td>78</td>
-                            <td>120</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">Wednesday</th>
-                            <td>1100</td>
-                            <td>78</td>
-                            <td>120</td>
-                        </tr>
-                    </tbody>
-                </table>
+                    <table class="table table-light">
+                        <thead>
+                            <tr>
+                                <th scope="col">Day</th>
+                                <th scope="col">Kcal</th>
+                                <th scope="col">Fat</th>
+                                <th scope="col">Carbs</th>
+                                <th scope="col">Protein</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th scope="row">Monday</th>
+                                <td>1100</td>
+                                <td>78</td>
+                                <td>78</td>
+                                <td>120</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Tuesday</th>
+                                <td>1100</td>
+                                <td>78</td>
+                                <td>78</td>
+                                <td>120</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Wednesday</th>
+                                <td>1100</td>
+                                <td>78</td>
+                                <td>78</td>
+                                <td>120</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
-            <div class="tab-pane fade" id="v-pills-shopping" role="tabpanel" aria-labelledby="v-pills-shopping-tab"
+            <div class="tab-pane fade" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab"
                 tabindex="0">
                 <div class="row mt-3">
                     <div class="col-12">
