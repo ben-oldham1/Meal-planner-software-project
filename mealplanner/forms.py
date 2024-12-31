@@ -3,10 +3,23 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 from .models import Recipe, IngredientInRecipe, Tag
 
+# New recipe
 class RecipeForm(forms.ModelForm):
     class Meta:
         model = Recipe
-        fields = ['name', 'difficulty', 'time_needed', 'public', 'image_url', 'instructions']
+        fields = ['name', 'difficulty', 'time_needed', 'public', 'image_url']
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = 'POST'
+        self.helper.add_input(Submit('submit', 'Save Changes', css_class='btn btn-primary'))
+
+# Edit recipe instructions
+class RecipeInstructionsForm(forms.ModelForm):
+    class Meta:
+        model = Recipe
+        fields = ['instructions']
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
