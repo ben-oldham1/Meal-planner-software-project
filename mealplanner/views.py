@@ -3,10 +3,13 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
 from django.db.models import Q
 from django.views.decorators.csrf import csrf_exempt
+
 import json
+import markdown
 
 from .models import Recipe, IngredientInRecipe, Ingredient, RecipeTag, Tag, MealPlan, MealPlanItem
-from .forms import RecipeForm, IngredientForm, TagForm
+from .forms import RecipeForm, RecipeInstructionsForm, IngredientForm, TagForm
+from .filters import RecipeFilter
 
 def recipe_list(request):
     # Only show public recipes to non-logged in users
@@ -17,14 +20,23 @@ def recipe_list(request):
     
     query = request.GET.get('q')
 
+    # Create filters form
+    recipe_filter = RecipeFilter(request.GET, queryset=Recipe.objects.all())
+
+    # If a search has been made
     if query:
         # Filter recipes based on search term in the name field
         recipes = recipes.filter(
             Q(name__icontains=query) | Q(instructions__icontains=query)
         ).distinct()
+    else:
+        # If no search, use the values from filter
+        recipes = recipe_filter.qs
 
     context = {
         'active_path': 'recipes',
+        'new_recipe_form': RecipeForm(),
+        'recipe_filter': recipe_filter,
         'recipes': recipes,
         'query': query,
     }
@@ -57,6 +69,10 @@ def recipe_detail(request, recipe_id):
     # Get the ingredients associated with this recipe
     ingredients = IngredientInRecipe.objects.filter(recipe=recipe)
 
+    # Format the markdown
+    md = markdown.Markdown()
+    recipe.instructions = md.convert(recipe.instructions)
+
     context = {
         'active_path': 'recipes',
         'recipe': recipe,
@@ -69,15 +85,15 @@ def recipe_detail(request, recipe_id):
 @login_required
 def add_recipe(request):
     if request.method == 'POST':
-        form = RecipeForm(request.POST)
-        if form.is_valid():
-            recipe = form.save(commit=False)
+        new_recipe_form = RecipeForm(request.POST)
+        if new_recipe_form.is_valid():
+            recipe = new_recipe_form.save(commit=False)
             recipe.user = request.user  # Associate the recipe with the logged-in user
             recipe.save()
-            return redirect('recipe_detail', recipe_id=recipe.id)
+            return redirect('edit_recipe', recipe_id=recipe.id)
     else:
         form = RecipeForm()
-    return render(request, 'mealplanner/add_recipe.html', {'form': form})
+    return render(request, 'mealplanner/add_recipe.html', {'new_recipe_form': form})
 
 @login_required
 def edit_recipe(request, recipe_id):
@@ -89,16 +105,26 @@ def edit_recipe(request, recipe_id):
         return HttpResponseForbidden("You are not allowed to edit this recipe.")
 
     if request.method == 'POST':
-        form = RecipeForm(request.POST, instance=recipe)
-        if form.is_valid():
-            form.save()
-            return redirect('recipe_detail', recipe_id=recipe.id)
+        if request.POST['form_id'] == 'recipe_details':
+            recipedetailsform = RecipeForm(request.POST, instance=recipe)
+            if recipedetailsform.is_valid():
+                recipedetailsform.save()
+                return redirect('recipe_detail', recipe_id=recipe.id)
+
+        if request.POST['form_id'] == 'recipe_instructions':
+            recipeinstructionsform = RecipeInstructionsForm(request.POST, instance=recipe)
+            if recipeinstructionsform.is_valid():
+                recipeinstructionsform.save()
+                return redirect('recipe_detail', recipe_id=recipe.id)
+
     else:
-        form = RecipeForm(instance=recipe)
+        recipedetailsform = RecipeForm(instance=recipe)
+        recipeinstructionsform = RecipeInstructionsForm(instance=recipe)
 
     context = {
         'active_path': 'recipes',
-        'form': form,
+        'recipedetailsform': recipedetailsform,
+        'recipeinstructionsform': recipeinstructionsform,
         'ingredients': ingredients,
         'recipe': recipe
     }
