@@ -21,7 +21,7 @@ def recipe_list(request):
     query = request.GET.get('q')
 
     # Create filters form
-    recipe_filter = RecipeFilter(request.GET, queryset=Recipe.objects.all())
+    recipe_filter = RecipeFilter(request.GET, queryset=recipes)
 
     # If a search has been made
     if query:
@@ -98,7 +98,7 @@ def add_recipe(request):
 @login_required
 def edit_recipe(request, recipe_id):
     recipe = get_object_or_404(Recipe, id=recipe_id)
-    ingredients = Ingredient.objects.all()
+    ingredients = Ingredient.objects.all().order_by('name')
 
     # Ensure the user can only edit their own recipes
     if recipe.user != request.user:
