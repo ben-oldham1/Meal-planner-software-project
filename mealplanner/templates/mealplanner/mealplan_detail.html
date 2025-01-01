@@ -54,7 +54,7 @@ View mealplan
                             {% for weekday_id, weekday_name in weekdays %}
                             <div class="col-6 col-sm-4 col-md-3 col-lg-2 d-flex flex-column gap-3"
                                 style="min-height: 300px;">
-                                <h3 class="pb-2 h4 border-2 border-bottom">{{ weekday_name }}</h3>
+                                <h3 class="pb-2 h4 border-1 border-bottom">{{ weekday_name }}</h3>
 
                                 {% for item in mealplanitems %}
                                 {% if item.weekday == weekday_id %}
