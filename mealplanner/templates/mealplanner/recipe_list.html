@@ -6,36 +6,41 @@
 View recipes
 {% endblock %}
 
+{% block navbuttons %}
+<!-- New recipe modal -->
+<button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#new-recipe-modal">
+    <i class="bi bi-plus"></i> New recipe
+</button>
+{% endblock %}
+
 {% block maincontent %}
 <div class="row my-3">
 
-    <div class="col-md-3">
-        <h2 class="h4">Filter</h2>
+    <div class="col-sm-3">
+        <div class="row mb-3">
 
-        <form method="GET">
-            {{ recipe_filter.form|crispy }}
-            <button class="btn btn-info" type="submit">Search</button>
-            <a href="{% url 'recipe_list' %}" class="btn btn-secondary">Clear filters</a>
+            <h2 class="h4">Filter</h2>
 
-        </form>
+            <form method="GET">
+                {{ recipe_filter.form|crispy }}
+                <button class="btn btn-info" type="submit">Filter</button>
+                <a href="{% url 'recipe_list' %}" class="btn btn-secondary">Clear filters</a>
+            </form>
 
-        <!-- New recipe modal -->
-        <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#new-recipe-modal">
-            <i class="bi bi-plus"></i> New recipe
-        </button>
-
+        </div>
     </div>
 
-    <div class="col-md-9">
+    <div class="col-sm-9">
 
         <div class="row mb-3">
-            <div class="col-12">
+
+            <div class="col">
                 <form class="d-flex" role="search" method="GET" action="{% url 'recipe_list' %}">
                     <input class="form-control me-2" type="search" name="q" placeholder="Search" aria-label="Search">
                     <button class="btn btn-info" type="submit">Search</button>
                 </form>
-
             </div>
+
         </div>
 
         <div class="row gy-3">
@@ -50,13 +55,17 @@ View recipes
                 {% endif %}
             </div>
 
+            {% if user.is_authenticated %}
             <h2>My recipes</h2>
+            {% endif %}
+
+
             {% for recipe in recipes %}
             {% if recipe.user == request.user %}
             <div class="col-6 col-md-4 col-xxl-3">
                 <a href="{% url 'recipe_detail' recipe.id %}"
                     class="link-dark link-underline-opacity-0 link-underline-opacity-25-hover link-offset-2">
-                    <div class="card">
+                    <div class="card h-100">
                         {% if recipe.image_url %}
                         <img src="{{ recipe.image_url }}" class="card-img-top" alt="{{ recipe.name }}">
                         {% endif %}
@@ -100,7 +109,7 @@ View recipes
             <div class="col-6 col-md-4 col-xxl-3">
                 <a href="{% url 'recipe_detail' recipe.id %}"
                     class="link-dark link-underline-opacity-0 link-underline-opacity-25-hover link-offset-2">
-                    <div class="card">
+                    <div class="card h-100">
                         {% if recipe.image_url %}
                         <img src="{{ recipe.image_url }}" class="card-img-top" alt="{{ recipe.name }}">
                         {% endif %}
