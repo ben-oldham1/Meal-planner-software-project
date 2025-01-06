@@ -5,167 +5,174 @@ View mealplan
 {% endblock %}
 
 {% block maincontent %}
-
-<div class="row">
-    <div class="d-flex flex-row justify-content-between mb-2">
-        <div>
-            <h2>{{mealplan.name}}</h2>
-        </div>
-
-        <div>
-            <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="pills-home-tab" data-bs-toggle="pill"
-                        data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home"
-                        aria-selected="true">
-                        <i class="bi bi-calendar3"></i> Weekly plan
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="pills-profile-tab" data-bs-toggle="pill"
-                        data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile"
-                        aria-selected="false">
-                        <i class="bi bi-activity"></i> Nutrition
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="pills-contact-tab" data-bs-toggle="pill"
-                        data-bs-target="#pills-contact" type="button" role="tab" aria-controls="pills-contact"
-                        aria-selected="false">
-                        <i class="bi bi-bag"></i> Shopping
-                    </button>
-                </li>
-            </ul>
-        </div>
-
-    </div>
-</div>
-
-<div class="row">
+<div class="row mb-2">
 
     <div class="col-12">
-
-        <div class="tab-content" id="pills-tabContent">
-            <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab"
-                tabindex="0">
-                <div class="row mb-3">
-                    <div class="col-12">
-                        <div class="row row-gap-3">
-                            {% for weekday_id, weekday_name in weekdays %}
-                            <div class="col-6 col-sm-4 col-md-3 col-lg-2 d-flex flex-column gap-3"
-                                style="min-height: 300px;">
-                                <h3 class="pb-2 h4 border-1 border-bottom">{{ weekday_name }}</h3>
-
-                                {% for item in mealplanitems %}
-                                {% if item.weekday == weekday_id %}
-                                <div class="card">
-                                    {% if item.recipe.image_url %}
-                                    <img src="{{ item.recipe.image_url }}" class="card-img-top"
-                                        alt="{{ item.recipe.name }}">
-                                    {% endif %}
-                                    <div class="card-body">
-                                        <h5 class="card-title">{{ item.recipe.name }}</h5>
-                                        <a href="{% url 'recipe_detail' item.recipe.id %}"
-                                            class="link-dark link-underline-opacity-0 link-underline-opacity-25-hover">
-                                            View recipe
-                                        </a>
-                                    </div>
-                                </div>
-                                {% endif %}
-                                {% endfor %}
-                            </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-12">
-                        {% if request.user == mealplan.user %}
-                        <a class="btn btn-outline-primary" href="{% url 'mealplan_edit' mealplan.id %}">Edit
-                            mealplan</a>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-
-            <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab"
-                tabindex="0">
-                <div class="row">
-                    <h3>Weekly stats</h3>
-
-                    <table class="table table-light">
-                        <thead>
-                            <tr>
-                                <th scope="col">Day</th>
-                                <th scope="col">Kcal</th>
-                                <th scope="col">Fat</th>
-                                <th scope="col">Carbs</th>
-                                <th scope="col">Protein</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <th scope="row">Monday</th>
-                                <td>1100</td>
-                                <td>78</td>
-                                <td>78</td>
-                                <td>120</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Tuesday</th>
-                                <td>1100</td>
-                                <td>78</td>
-                                <td>78</td>
-                                <td>120</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Wednesday</th>
-                                <td>1100</td>
-                                <td>78</td>
-                                <td>78</td>
-                                <td>120</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="tab-pane fade" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab"
-                tabindex="0">
-                <div class="row mt-3">
-                    <div class="col-12">
-                        <h3>Shopping list</h3>
-                    </div>
-
-                    <div class="col-5">
-                        <button class="btn btn-outline-primary">
-                            Email me
-                        </button>
-                    </div>
-
-                    <div class="col-7">
-                        <div class="input-group">
-                            <span class="input-group-text bg-white" id="basic-addon1">Servings</span>
-                            <input type="number" class="form-control" value="1">
-                        </div>
-                    </div>
-
-                    <div class="col-12">
-                        <ul>
-                            <li>11 units chicken breast</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <h2>{{mealplan.name}}</h2>
     </div>
 
 </div>
 
-<div class="col-md-8">
+<div class="row col-gap-3 row-gap-3">
+    <div class="col-sm-4 col-md-3 col-lg-2">
+        <div class="row">
+            <div class="col-12">
 
+                <ul class="nav nav-pills flex-column p-2 border rounded-3" id="js-pills-1" role="tablist"
+                    aria-orientation="vertical">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active w-100 text-start d-flex align-items-center" id="profile-pill"
+                            data-bs-toggle="pill" data-bs-target="#profile-pill-pane" type="button" role="tab"
+                            aria-controls="profile-pill-pane" aria-selected="true">
+                            <i class="bi bi-calendar3" style="width: 25px;"></i>
+                            Overview
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link w-100 text-start d-flex align-items-center" id="billing-pill"
+                            data-bs-toggle="pill" data-bs-target="#billing-pill-pane" type="button" role="tab"
+                            aria-controls="billing-pill-pane" aria-selected="false">
+                            <i class="bi bi-heart" style="width: 25px;"></i> Nutrition
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link w-100 text-start d-flex align-items-center" id="messages-pill"
+                            data-bs-toggle="pill" data-bs-target="#messages-pill-pane" type="button" role="tab"
+                            aria-controls="messages-pill-pane" aria-selected="false">
+                            <i class="bi bi-bag-check" style="width: 25px;"></i>
+                            Shopping list
+                        </button>
+                    </li>
+                </ul>
 
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-8 col-md-9 col-lg-10">
+        <div class="row">
+            <div class="col-12">
+                <div class="tab-content" id="js-pills-content-1">
+
+                    <div class="tab-pane fade show active" id="profile-pill-pane" role="tabpanel"
+                        aria-labelledby="profile-pill" tabindex="0">
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <div class="row row-gap-3">
+                                    {% for weekday_id, weekday_name in weekdays %}
+                                    <div class="col-6 col-md-4 col-lg-3 d-flex flex-column gap-3"
+                                        style="min-height: 300px;">
+                                        <h3 class="pb-2 h4 border-1 border-bottom">{{ weekday_name }}</h3>
+
+                                        {% for item in mealplanitems %}
+                                        {% if item.weekday == weekday_id %}
+                                        <div class="card">
+                                            {% if item.recipe.image_url %}
+                                            <img src="{{ item.recipe.image_url }}"
+                                                class="card-img-top d-none d-sm-block" alt="{{ item.recipe.name }}">
+                                            {% endif %}
+                                            <div class="card-body">
+                                                <h5 class="card-title">{{ item.recipe.name }}</h5>
+                                                <a href="{% url 'recipe_detail' item.recipe.id %}"
+                                                    class="link-dark link-underline-opacity-0 link-underline-opacity-25-hover">
+                                                    View recipe
+                                                </a>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                {% if request.user == mealplan.user %}
+                                <a class="btn btn-outline-primary" href="{% url 'mealplan_edit' mealplan.id %}">Edit
+                                    mealplan</a>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="tab-pane fade" id="billing-pill-pane" role="tabpanel" aria-labelledby="billing-pill"
+                        tabindex="0">
+                        <div class="row">
+                            <h3>Weekly stats</h3>
+
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Day</th>
+                                        <th scope="col">Kcal</th>
+                                        <th scope="col">Fat</th>
+                                        <th scope="col">Carbs</th>
+                                        <th scope="col">Protein</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <th scope="row">Monday</th>
+                                        <td>1100</td>
+                                        <td>78</td>
+                                        <td>78</td>
+                                        <td>120</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Tuesday</th>
+                                        <td>1100</td>
+                                        <td>78</td>
+                                        <td>78</td>
+                                        <td>120</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Wednesday</th>
+                                        <td>1100</td>
+                                        <td>78</td>
+                                        <td>78</td>
+                                        <td>120</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade" id="messages-pill-pane" role="tabpanel" aria-labelledby="messages-pill"
+                        tabindex="0">
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <h3>Shopping list</h3>
+                            </div>
+
+                            <div class="col-5">
+                                <button class="btn btn-outline-primary">
+                                    Email me
+                                </button>
+                            </div>
+
+                            <div class="col-7">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white" id="basic-addon1">Servings</span>
+                                    <input type="number" class="form-control" value="1">
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <ul>
+                                    <li>11 units chicken breast</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
 </div>
+
 
 {% endblock %}
