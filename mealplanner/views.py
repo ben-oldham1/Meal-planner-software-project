@@ -8,7 +8,7 @@ import json
 import markdown
 
 from .models import Recipe, IngredientInRecipe, Ingredient, RecipeTag, Tag, MealPlan, MealPlanItem
-from .forms import RecipeForm, RecipeInstructionsForm, IngredientForm, TagForm
+from .forms import RecipeForm, RecipeInstructionsForm, IngredientForm, TagForm, MealplanRecipeForm
 from .filters import RecipeFilter
 
 def recipe_list(request):
@@ -94,6 +94,17 @@ def add_recipe(request):
     else:
         form = RecipeForm()
     return render(request, 'mealplanner/add_recipe.html', {'new_recipe_form': form})
+
+@login_required
+def add_recipe_to_mealplan(request, mealplan_id):
+    if request.method == 'POST':
+        add_recipe_form = MealplanRecipeForm(request.POST)
+        if add_recipe_form.is_valid():
+            mealplan_item = add_recipe_form.save(commit=False)
+            mealplan_item.weekday = 0
+            mealplan_item.meal_plan = MealPlan.objects.get(id=mealplan_id)
+            mealplan_item.save()
+    return redirect('mealplan_edit', mealplan_id=mealplan_id)
 
 @login_required
 def edit_recipe(request, recipe_id):
@@ -282,6 +293,7 @@ def mealplan_edit(request, mealplan_id):
         context = {
             'active_path': 'mealplans',
             'mealplan': mealplan,
+            'mealplan_recipe_form': MealplanRecipeForm(),
             'mealplanitems': mealplanitems,
             'weekdays': WEEKDAY_CHOICES,
         }

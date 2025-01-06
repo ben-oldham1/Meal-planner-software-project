@@ -1,7 +1,7 @@
 from django import forms
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
-from .models import Recipe, IngredientInRecipe, Tag
+from .models import Recipe, IngredientInRecipe, Tag, MealPlanItem
 
 # New recipe
 class RecipeForm(forms.ModelForm):
@@ -42,6 +42,18 @@ class TagForm(forms.ModelForm):
     class Meta:
         model = Tag
         fields = ['name']
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = 'POST'
+        self.helper.add_input(Submit('submit', 'Add Tag', css_class='btn btn-secondary'))
+
+# Add recipe to mealplan
+class MealplanRecipeForm(forms.ModelForm):
+    class Meta:
+        model = MealPlanItem
+        fields = ['recipe']
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

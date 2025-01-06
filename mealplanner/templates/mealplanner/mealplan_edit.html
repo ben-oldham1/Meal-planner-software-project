@@ -1,17 +1,31 @@
 {% extends 'base.html' %}
+{% load crispy_forms_tags %}
 
 {% block title %}
 View mealplan
 {% endblock %}
 
+{% block navbuttons %}
+<!-- Add recipe modal -->
+<button id="add-recipe-button" type="button" class="btn btn-secondary" data-bs-toggle="modal"
+    data-bs-target="#add-recipe-modal">
+    <i class="bi bi-plus"></i> Add recipe
+</button>
+{% endblock %}
+
 {% block maincontent %}
 
+<div class="row mb-3">
+    <div class="col-12">
+        <h2>Editing mealplan: {{mealplan.name}}</h2>
+    </div>
+</div>
 
 <div id="meal-plan-container" class="row row-gap-3">
     {% for weekday_id, weekday_name in weekdays %}
     <div class="col-6 col-md-3 col-xl-2 column d-flex flex-column gap-2" style="min-height: 300px;"
         data-weekday="{{ weekday_id }}" ondrop="drop(event)" ondragover="allowDrop(event)">
-        <h3 class="pb-2 border-2 border-bottom">{{ weekday_name }}</h3>
+        <h3 class="pb-2 h4 border-2 border-bottom">{{ weekday_name }}</h3>
 
         {% for item in mealplanitems %}
         {% if item.weekday == weekday_id %}
@@ -30,9 +44,16 @@ View mealplan
     {% endfor %}
 </div>
 
-<button onclick="saveMealPlan()" class="btn btn-primary">Save</button>
-<a class="btn btn-outline-danger" href="{% url 'mealplan_detail' mealplan.id %}">Cancel</a>
-
+<div class="row">
+    <div class="col-12">
+        <button onclick="saveMealPlan()" class="btn btn-primary">Save</button>
+        <a class="btn btn-secondary" href="{% url 'mealplan_detail' mealplan.id %}">Exit editor</a>
+        <button id="add-recipe-button" type="button" class="btn btn-secondary" data-bs-toggle="modal"
+            data-bs-target="#add-recipe-modal">
+            Add recipe
+        </button>
+    </div>
+</div>
 
 <script>
     function allowDrop(event) {
@@ -70,14 +91,42 @@ View mealplan
             body: JSON.stringify({ meal_plan_items: mealData })
         }).then(response => {
             if (response.ok) {
-                alert("Mealplan saved");
+                console.log("Mealplan saved");
                 location.reload();  // Reload to reflect changes if needed
             } else {
                 alert("Failed to save meal plan.");
             }
         });
     }
+    /*
+    */
 </script>
 </div>
 
+{% endblock %}
+
+{% block modal %}
+<!-- Add recipe to mealplan modal -->
+<div class="modal fade" id="add-recipe-modal" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modal-title-2"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="modal-title-2">Add recipe to mealplan</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <form method="POST" action="{% url 'add_recipe_to_mealplan' mealplan.id %}" id="add-recipe-form">
+                    {% csrf_token %}
+
+                    {{mealplan_recipe_form|crispy}}
+
+                    <button type="submit" class="btn btn-primary">Create recipe</button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
