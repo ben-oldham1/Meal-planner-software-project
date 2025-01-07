@@ -120,6 +120,8 @@ View mealplan
                 <form method="POST" action="{% url 'add_recipe_to_mealplan' mealplan.id %}" id="add-recipe-form">
                     {% csrf_token %}
 
+                    <p>Save your changes before adding a new recipe!</p>
+
                     {{mealplan_recipe_form|crispy}}
 
                     <button type="submit" class="btn btn-primary">Create recipe</button>
