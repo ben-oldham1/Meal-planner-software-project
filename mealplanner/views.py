@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
-from django.db.models import Q
+from django.db.models import Q, Sum
 from django.views.decorators.csrf import csrf_exempt
 
 import json
@@ -230,6 +230,15 @@ def mealplan_detail(request, mealplan_id):
     # Get the meal plan items associated with this meal plan
     mealplanitems = MealPlanItem.objects.filter(meal_plan=mealplan)
 
+    # Aggregate ingredients for the shopping list
+    shopping_list = (
+        IngredientInRecipe.objects
+        .filter(recipe__meal_plan_items__meal_plan=mealplan)
+        .values('ingredient__name', 'ingredient__measurement_unit')
+        .annotate(total_amount=Sum('measurement_amount'))
+        .order_by('ingredient__name')
+    )
+
     WEEKDAY_CHOICES = [
         (0, 'Monday'),
         (1, 'Tuesday'),
@@ -245,6 +254,7 @@ def mealplan_detail(request, mealplan_id):
         'mealplan': mealplan,
         'mealplanitems': mealplanitems,
         'weekdays': WEEKDAY_CHOICES,
+        'shopping_list': shopping_list,
     }
 
     return render(request, 'mealplanner/mealplan_detail.html', context)
