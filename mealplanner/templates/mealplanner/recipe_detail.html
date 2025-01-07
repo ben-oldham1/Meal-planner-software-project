@@ -33,16 +33,16 @@ View recipe
             <input type="number" class="form-control" id="servings" value="1" min="1" oninput="scaleIngredients()">
         </div>
 
-        <table class="table table-light">
+        <table class="table">
             <tbody>
                 {% for ingredient in ingredients %}
                 <tr>
+                    <th>{{ ingredient.ingredient.name }}</th>
                     <!-- Store the original measurement amount as a data attribute -->
-                    <th data-original-amount="{{ ingredient.measurement_amount }}">
+                    <td data-original-amount="{{ ingredient.measurement_amount }}">
                         <span class="scaled-amount">{{ ingredient.measurement_amount }}</span>
                         {{ ingredient.ingredient.get_measurement_unit_display }}
-                    </th>
-                    <td>{{ ingredient.ingredient.name }}</td>
+                    </td>
                 </tr>
                 {% empty %}
                 <tr>
@@ -58,7 +58,7 @@ View recipe
                 const servings = document.getElementById("servings").value;
 
                 // Select all elements with the class "scaled-amount"
-                const ingredients = document.querySelectorAll("th[data-original-amount]");
+                const ingredients = document.querySelectorAll("td[data-original-amount]");
 
                 ingredients.forEach((ingredient) => {
                     // Get the original amount from the data attribute
