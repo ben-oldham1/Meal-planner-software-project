@@ -5,6 +5,12 @@
 Create recipe
 {% endblock %}
 
+{% block navbuttons %}
+<a class="btn btn-secondary" href="{% url 'recipe_detail' recipe.id %}">
+    Exit editor
+</a>
+{% endblock %}
+
 {% block maincontent %}
 <div class="row">
     <div class="col-md-4">
@@ -29,9 +35,12 @@ Create recipe
             {% csrf_token %}
             <div class="input-group mb-3">
                 <input type="text" name="name" class="form-control" placeholder="Tag Name" required>
-                <button type="submit" class="btn btn-primary">Add Tag</button>
+                <button type="submit" class="btn btn-secondary">Add Tag</button>
             </div>
         </form>
+
+
+        <a class="btn btn-secondary" href="{% url 'recipe_detail' recipe.id %}">Exit editor</a>
     </div>
     <div class="col-md-8">
 
@@ -42,8 +51,11 @@ Create recipe
             </li>
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact-tab-pane"
-                    type="button" role="tab" aria-controls="contact-tab-pane" aria-selected="false">Method
-                    (TBC)</button>
+                    type="button" role="tab" aria-controls="contact-tab-pane" aria-selected="false">Method</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="nutri-tab" data-bs-toggle="tab" data-bs-target="#nutri-tab-pane"
+                    type="button" role="tab" aria-controls="nutri-tab-pane" aria-selected="false">Nutrition</button>
             </li>
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane"
@@ -55,9 +67,11 @@ Create recipe
             <div class="tab-pane pt-3 fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab"
                 tabindex="0">
 
+                <h2 class="h3">Ingredients</h2>
+                <p>For 1 serving</p>
+
                 <div class="mb-4">
-                    <p>For 1 serving</p>
-                    <table class="table table-light">
+                    <table class="table">
                         <tbody id="ingredient-list">
                             {% for ingredient in recipe.recipe_ingredients.all %}
                             <tr id="ingredient-{{ ingredient.id }}">
@@ -101,15 +115,6 @@ Create recipe
                                 required>
                         </div>
 
-                        <div class="input-group mb-3">
-                            <button type="submit" class="btn btn-outline-secondary">Calculate</button>
-
-                            <input type="number" name="calories" class="form-control" placeholder="Calories (kcal)"
-                                required>
-                            <input type="number" name="fat" class="form-control" placeholder="Fat (g)" required>
-                            <input type="number" name="carbs" class="form-control" placeholder="Carbs (g)" required>
-                            <input type="number" name="protein" class="form-control" placeholder="Protein (g)" required>
-                        </div>
                         <button type="submit" class="btn btn-primary">Add Ingredient</button>
                     </form>
                 </div>
@@ -120,11 +125,37 @@ Create recipe
             <div class="tab-pane pt-3 fade" id="contact-tab-pane" role="tabpanel" aria-labelledby="contact-tab"
                 tabindex="0">
 
-                <h2 class="h3">Recipe method</h2>
+                <h2 class="h3">Method</h2>
+
                 <form method="POST" class="form">
                     {% csrf_token %}
                     <input type="hidden" name="form_id" value="recipe_instructions">
                     {{ recipeinstructionsform|crispy }}
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <a href="{% url 'recipe_detail' recipe.id %}" class="btn btn-outline-danger">Cancel</a>
+                </form>
+
+            </div>
+
+            <!-- Nutrition form -->
+            <div class="tab-pane pt-3 fade" id="nutri-tab-pane" role="tabpanel" aria-labelledby="nutri-tab"
+                tabindex="0">
+
+                <h2 class="h3">Nutrition</h2>
+                <p>For 1 serving</p>
+
+                {% if receipenutritionform.errors %}
+                <ul class="errorlist">
+                    {% for field, errors in receipenutritionform.errors.items %}
+                    <li>{{ field }}: {{ errors|join:", " }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+
+                <form method="POST" class="form">
+                    {% csrf_token %}
+                    <input type="hidden" name="form_id" value="recipe_nutrition">
+                    {{ receipenutritionform|crispy }}
                     <button type="submit" class="btn btn-primary">Save Changes</button>
                     <a href="{% url 'recipe_detail' recipe.id %}" class="btn btn-outline-danger">Cancel</a>
                 </form>

@@ -19,7 +19,7 @@ View recipe
         <p><strong>Public:</strong> {{ recipe.public|yesno:"Yes,No" }}</p>
 
         {% if request.user == recipe.user %}
-        <a class="btn btn-outline-secondary" href="{% url 'edit_recipe' recipe.id %}">Edit recipe</a>
+        <a class="btn btn-secondary" href="{% url 'edit_recipe' recipe.id %}">Edit recipe</a>
         {% endif %}
 
     </div>
@@ -76,6 +76,66 @@ View recipe
 
         <h2>Method</h2>
         <p>{{ recipe.instructions|safe }}</p>
+
+        <h2>Nutrition</h2>
+        {% if nutrition %}
+
+        <div class="d-flex flex-row gap-2 text-center">
+            <div class="py-2 px-3 rounded d-flex flex-column gap-2 border m-0
+            {% if nutrition.calorie_colour == 1 %} bg-success-subtle
+                        {% elif nutrition.calorie_colour == 2 %} bg-warning-subtle
+                        {% elif nutrition.calorie_colour == 3 %} bg-danger-subtle {% endif %}">
+                <p class="p-0 m-0">Calories</p>
+                <p class="h5 p-0 m-0">{{ nutrition.calories }}g</p>
+                <p class="p-0 m-0">
+                    {% if nutrition.calorie_colour == 1 %} Low
+                    {% elif nutrition.calorie_colour == 2 %} Medium
+                    {% elif nutrition.calorie_colour == 3 %} High{% endif %}
+                </p>
+            </div>
+            <div class="py-2 px-3 rounded d-flex flex-column gap-2 border m-0
+            {% if nutrition.fat_colour == 1 %} bg-success-subtle
+                        {% elif nutrition.fat_colour == 2 %} bg-warning-subtle
+                        {% elif nutrition.fat_colour == 3 %} bg-danger-subtle {% endif %}">
+                <p class="p-0 m-0">Fat</p>
+                <p class="h5 p-0 m-0">{{ nutrition.fat }}g</p>
+                <p class="p-0 m-0">
+                    {% if nutrition.fat_colour == 1 %} Low
+                    {% elif nutrition.fat_colour == 2 %} Medium
+                    {% elif nutrition.fat_colour == 3 %} High{% endif %}
+                </p>
+            </div>
+            <div class="py-2 px-3 rounded d-flex flex-column gap-2 border m-0
+            {% if nutrition.carbs_colour == 1 %} bg-success-subtle
+                        {% elif nutrition.carbs_colour == 2 %} bg-warning-subtle
+                        {% elif nutrition.carbs_colour == 3 %} bg-danger-subtle {% endif %}">
+                <p class="p-0 m-0">Carbs</p>
+                <p class="h5 p-0 m-0">{{ nutrition.carbs }}g</p>
+                <p class="p-0 m-0">
+                    {% if nutrition.carbs_colour == 1 %} Low
+                    {% elif nutrition.carbs_colour == 2 %} Medium
+                    {% elif nutrition.carbs_colour == 3 %} High{% endif %}
+                </p>
+            </div>
+            <div class="py-2 px-3 rounded d-flex flex-column gap-2 border m-0
+            {% if nutrition.protein_colour == 1 %} bg-success-subtle
+                        {% elif nutrition.protein_colour == 2 %} bg-warning-subtle
+                        {% elif nutrition.protein_colour == 3 %} bg-danger-subtle {% endif %}">
+                <p class="p-0 m-0">Protein</p>
+                <p class="h5 p-0 m-0">{{ nutrition.protein }}g</p>
+                <p class="p-0 m-0">
+                    {% if nutrition.protein_colour == 1 %} Low
+                    {% elif nutrition.protein_colour == 2 %} Medium
+                    {% elif nutrition.protein_colour == 3 %} High{% endif %}
+                </p>
+            </div>
+        </div>
+
+        {% else %}
+
+        <p>No nutrition data available</p>
+
+        {% endif %}
 
     </div>
 
