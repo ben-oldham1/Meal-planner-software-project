@@ -25,6 +25,13 @@ MEASUREMENT_UNITS = [
     ('unit', 'units'),
 ]
 
+NUTRI_COLOURS = [
+    (0, 'White'),
+    (1, 'Green'),
+    (2, 'Amber'),
+    (3, 'Red'),
+]
+
 class Recipe(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='recipes')
     name = models.CharField(max_length=255)
@@ -33,6 +40,20 @@ class Recipe(models.Model):
     public = models.BooleanField(default=False)
     image_url = models.URLField(max_length=500, blank=True, null=True)
     instructions = models.TextField()
+
+    def __str__(self):
+        return self.name
+
+class RecipeNutrition(models.Model):
+    recipe = models.OneToOneField(Recipe, on_delete=models.CASCADE, primary_key=True)
+    calories = models.FloatField()
+    calorie_colour = models.IntegerField(choices=NUTRI_COLOURS)
+    fat = models.FloatField()
+    fat_colour = models.IntegerField(choices=NUTRI_COLOURS)
+    carbs = models.FloatField()
+    carbs_colour = models.IntegerField(choices=NUTRI_COLOURS)
+    protein = models.FloatField()
+    protein_colour = models.IntegerField(choices=NUTRI_COLOURS)
 
     def __str__(self):
         return self.name
@@ -48,10 +69,6 @@ class IngredientInRecipe(models.Model):
     ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE, related_name='ingredient_recipes')
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, related_name='recipe_ingredients')
     measurement_amount = models.FloatField()
-    calories = models.FloatField()
-    fat = models.FloatField()
-    carbs = models.FloatField()
-    protein = models.FloatField()
 
     def __str__(self):
         return f"{self.measurement_amount} {self.ingredient.measurement_unit} of {self.ingredient.name}"

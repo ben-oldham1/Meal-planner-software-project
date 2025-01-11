@@ -7,8 +7,8 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 import markdown
 
-from .models import Recipe, IngredientInRecipe, Ingredient, RecipeTag, Tag, MealPlan, MealPlanItem
-from .forms import RecipeForm, RecipeInstructionsForm, IngredientForm, TagForm, MealplanRecipeForm
+from .models import Recipe, RecipeNutrition, IngredientInRecipe, Ingredient, RecipeTag, Tag, MealPlan, MealPlanItem
+from .forms import RecipeForm, RecipeNutritionForm, RecipeInstructionsForm, IngredientForm, TagForm, MealplanRecipeForm
 from .filters import RecipeFilter
 
 def recipe_list(request):
@@ -69,6 +69,12 @@ def recipe_detail(request, recipe_id):
     # Get the ingredients associated with this recipe
     ingredients = IngredientInRecipe.objects.filter(recipe=recipe)
 
+    # Get the nutrition data associated with this recipe
+    try:
+        nutrition = RecipeNutrition.objects.get(recipe=recipe)
+    except:
+        nutrition = None
+
     # Format the markdown
     md = markdown.Markdown()
     recipe.instructions = md.convert(recipe.instructions)
@@ -76,7 +82,8 @@ def recipe_detail(request, recipe_id):
     context = {
         'active_path': 'recipes',
         'recipe': recipe,
-        'ingredients': ingredients
+        'ingredients': ingredients,
+        'nutrition': nutrition
     }
 
     # Pass the recipe and its ingredients to the template
@@ -120,22 +127,42 @@ def edit_recipe(request, recipe_id):
             recipedetailsform = RecipeForm(request.POST, instance=recipe)
             if recipedetailsform.is_valid():
                 recipedetailsform.save()
-                return redirect('recipe_detail', recipe_id=recipe.id)
+            
+            return redirect('edit_recipe', recipe_id=recipe.id)
 
         if request.POST['form_id'] == 'recipe_instructions':
             recipeinstructionsform = RecipeInstructionsForm(request.POST, instance=recipe)
             if recipeinstructionsform.is_valid():
                 recipeinstructionsform.save()
-                return redirect('recipe_detail', recipe_id=recipe.id)
+            
+            return redirect('edit_recipe', recipe_id=recipe.id)
+      
+
+        if request.POST['form_id'] == 'recipe_nutrition':
+            receipenutritionform = RecipeNutritionForm(request.POST)
+            if receipenutritionform.is_valid():
+                nutrition = receipenutritionform.save(commit=False)
+                nutrition.recipe = recipe
+                nutrition.save()
+            
+            return redirect('edit_recipe', recipe_id=recipe.id)
+            
 
     else:
         recipedetailsform = RecipeForm(instance=recipe)
         recipeinstructionsform = RecipeInstructionsForm(instance=recipe)
+        
+        try:
+            recipenutrition = RecipeNutrition.objects.get(recipe=recipe)
+            receipenutritionform = RecipeNutritionForm(instance=recipenutrition)
+        except:
+            receipenutritionform = RecipeNutritionForm()
 
     context = {
         'active_path': 'recipes',
         'recipedetailsform': recipedetailsform,
         'recipeinstructionsform': recipeinstructionsform,
+        'receipenutritionform': receipenutritionform,
         'ingredients': ingredients,
         'recipe': recipe
     }
@@ -152,20 +179,12 @@ def add_ingredient(request, recipe_id):
     if request.method == 'POST':
         ingredient_id = request.POST.get('ingredient')
         measurement_amount = request.POST.get('measurement_amount')
-        calories = request.POST.get('calories')
-        fat = request.POST.get('fat')
-        carbs = request.POST.get('carbs')
-        protein = request.POST.get('protein')
 
         # Create a new IngredientInRecipe instance
         ingredient_in_recipe = IngredientInRecipe(
             recipe=recipe,
             ingredient_id=ingredient_id,
             measurement_amount=measurement_amount,
-            calories=calories,
-            fat=fat,
-            carbs=carbs,
-            protein=protein
         )
         ingredient_in_recipe.save()
 

@@ -1,13 +1,25 @@
 from django import forms
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
-from .models import Recipe, IngredientInRecipe, Tag, MealPlanItem
+from .models import Recipe, RecipeNutrition, IngredientInRecipe, Tag, MealPlanItem
 
 # New recipe
 class RecipeForm(forms.ModelForm):
     class Meta:
         model = Recipe
         fields = ['name', 'difficulty', 'time_needed', 'public', 'image_url']
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = 'POST'
+        self.helper.add_input(Submit('submit', 'Save Changes', css_class='btn btn-primary'))
+
+# Edit recipe nutrition
+class RecipeNutritionForm(forms.ModelForm):
+    class Meta:
+        model = RecipeNutrition
+        fields = ['calories', 'calorie_colour', 'fat', 'fat_colour', 'carbs', 'carbs_colour', 'protein', 'protein_colour']
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -30,7 +42,7 @@ class RecipeInstructionsForm(forms.ModelForm):
 class IngredientForm(forms.ModelForm):
     class Meta:
         model = IngredientInRecipe
-        fields = ['ingredient', 'measurement_amount', 'calories', 'fat', 'carbs', 'protein']
+        fields = ['ingredient', 'measurement_amount']
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

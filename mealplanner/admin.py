@@ -28,7 +28,7 @@ class IngredientAdmin(admin.ModelAdmin):
 # IngredientInRecipe admin configuration (if you want it standalone, otherwise it's inline in Recipe)
 @admin.register(IngredientInRecipe)
 class IngredientInRecipeAdmin(admin.ModelAdmin):
-    list_display = ('recipe', 'ingredient', 'measurement_amount', 'calories', 'fat', 'carbs', 'protein')
+    list_display = ('recipe', 'ingredient', 'measurement_amount')
     search_fields = ('recipe__name', 'ingredient__name')
     list_filter = ('recipe', 'ingredient')
 
