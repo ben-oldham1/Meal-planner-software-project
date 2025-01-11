@@ -23,7 +23,7 @@ View recipes
 
             <form method="GET">
                 {{ recipe_filter.form|crispy }}
-                <button class="btn btn-info" type="submit">Filter</button>
+                <button class="btn btn-primary" type="submit">Filter</button>
                 <a href="{% url 'recipe_list' %}" class="btn btn-secondary">Clear filters</a>
             </form>
 
