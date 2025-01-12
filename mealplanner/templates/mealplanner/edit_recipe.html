@@ -40,7 +40,7 @@ Create recipe
         </form>
 
 
-        <a class="btn btn-secondary" href="{% url 'recipe_detail' recipe.id %}">Exit editor</a>
+        <a class="btn btn-primary" href="{% url 'recipe_detail' recipe.id %}">Exit editor</a>
     </div>
     <div class="col-md-8">
 
@@ -116,6 +116,7 @@ Create recipe
                         </div>
 
                         <button type="submit" class="btn btn-primary">Add Ingredient</button>
+                        <p class="mt-2 text-muted">Saved automatically</p>
                     </form>
                 </div>
 
@@ -143,6 +144,8 @@ Create recipe
 
                 <h2 class="h3">Nutrition</h2>
                 <p>For 1 serving</p>
+
+                <button class="btn btn-secondary" onclick="fetchNutritionData()">Estimate automatically</button>
 
                 {% if receipenutritionform.errors %}
                 <ul class="errorlist">
@@ -180,5 +183,46 @@ Create recipe
         </div>
     </div>
 </div>
+
+<script>
+    // Assuming the CSRF token is stored in a JavaScript variable named `csrfToken`
+    const csrfToken = "{{ csrf_token }}"; // Make sure this variable is set in your template
+
+    async function fetchNutritionData() {
+        try {
+            // Replace with the actual URL for your view
+            const url = `{% url 'get_nutri_data' recipe.id %}`;
+
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'X-CSRFToken': csrfToken, // Use the CSRF token variable
+                },
+                credentials: 'include', // Include credentials for authenticated requests
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            // Log the nutrition data
+            console.log('Calories:', data.calories);
+            console.log('Fat:', data.fat);
+            console.log('Carbs:', data.carbs);
+            console.log('Protein:', data.protein);
+
+            // Populate form fields with the fetched data
+            document.getElementById('id_calories').value = data.calories;
+            document.getElementById('id_fat').value = data.fat;
+            document.getElementById('id_carbs').value = data.carbs;
+            document.getElementById('id_protein').value = data.protein;
+        } catch (error) {
+            console.error('Error fetching nutrition data:', error);
+            alert('Error fetching nutrition data! Try entering manually');
+        }
+    }
+</script>
 
 {% endblock %}
