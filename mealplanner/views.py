@@ -6,6 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 import json
 import markdown
+import requests
 
 from .models import Recipe, RecipeNutrition, IngredientInRecipe, Ingredient, RecipeTag, Tag, MealPlan, MealPlanItem
 from .forms import RecipeForm, RecipeNutritionForm, RecipeInstructionsForm, IngredientForm, TagForm, MealplanRecipeForm
@@ -89,6 +90,25 @@ def recipe_detail(request, recipe_id):
     # Pass the recipe and its ingredients to the template
     return render(request, 'mealplanner/recipe_detail.html', context)
 
+def get_nutrition_data(query, app_id, app_key):
+    url = 'https://trackapi.nutritionix.com/v2/natural/nutrients'
+    headers = {
+        'Content-Type': 'application/json',
+        'x-app-id': app_id,
+        'x-app-key': app_key
+    }
+    body = {
+        "query": query
+    }
+
+    try:
+        response = requests.post(url, headers=headers, data=json.dumps(body))
+        response.raise_for_status()  # Raise an HTTPError for bad responses (4xx and 5xx)
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        print(f"An error occurred: {e}")
+        return None
+
 @login_required
 def add_recipe(request):
     if request.method == 'POST':
@@ -168,6 +188,48 @@ def edit_recipe(request, recipe_id):
     }
 
     return render(request, 'mealplanner/edit_recipe.html', context)
+
+# Utility/CRUD views
+@login_required
+def get_nutri_for_recipe(request, recipe_id):
+    # Get the recipe and it's ingredients
+    recipe = get_object_or_404(Recipe, id=recipe_id)
+    ingredients_in_recipe = IngredientInRecipe.objects.filter(recipe=recipe)
+
+    APP_ID = "d360df73"  # Replace with your actual App ID
+    APP_KEY = "58f5b744482f26ff48588149cb1508bb"  # Replace with your actual App Key
+
+    # String to store the natural language list of ingredients
+    ingredients_natural = ""
+    
+    # Iterate through ingredients and add to string
+    for ingredient in ingredients_in_recipe:
+        ingredients_natural += str(ingredient.measurement_amount) + ' ' + str(ingredient.ingredient.measurement_unit) + ' of ' + str(ingredient.ingredient.name) + '; '
+
+    # Call the API function to retrieve the data
+    nutrition_data = get_nutrition_data(ingredients_natural, APP_ID, APP_KEY)
+
+    # Vars to store the nutrition parameters
+    calories = 0
+    fat = 0
+    carbs = 0
+    protein = 0
+
+    if nutrition_data:
+        # Iterate through response and extract nutri params
+        for food in nutrition_data['foods']:
+            calories += food['nf_calories']
+            fat += food['nf_total_fat']
+            carbs += food['nf_total_carbohydrate']
+            protein += food['nf_protein']
+
+        # Provide response in JSON format for easy JS interpretation
+        return JsonResponse({
+            'calories': round(calories, 1),
+            'fat': round(fat, 1),
+            'carbs': round(carbs, 1),
+            'protein': round(protein, 1),
+        })
 
 @login_required
 def add_ingredient(request, recipe_id):
