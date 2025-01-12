@@ -27,6 +27,12 @@ class RecipeNutritionForm(forms.ModelForm):
         self.helper.form_method = 'POST'
         self.helper.add_input(Submit('submit', 'Save Changes', css_class='btn btn-primary'))
 
+        # Give more useful labels
+        self.fields['calories'].label = "Calories (Kcal)"
+        self.fields['fat'].label = "Total fat (grams)"
+        self.fields['carbs'].label = "Total carbs (grams)"
+        self.fields['protein'].label = "Protein (grams)"
+
 # Edit recipe instructions
 class RecipeInstructionsForm(forms.ModelForm):
     class Meta:
