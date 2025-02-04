@@ -14,7 +14,7 @@ View mealplan
 </div>
 
 <div class="row col-gap-3 row-gap-3">
-    <div class="col-sm-4 col-md-3 col-lg-2">
+    <div class="col-sm-4 col-lg-3 col-xl-2">
         <div class="row">
             <div class="col-12">
 
@@ -49,7 +49,7 @@ View mealplan
         </div>
     </div>
 
-    <div class="col-sm-8 col-md-9 col-lg-10">
+    <div class="col-sm-8 col-lg-9 col-xl-10">
         <div class="row">
             <div class="col-12">
                 <div class="tab-content" id="js-pills-content-1">
@@ -58,15 +58,14 @@ View mealplan
                         aria-labelledby="profile-pill" tabindex="0">
                         <div class="row mb-3">
                             <div class="col-12">
-                                <div class="row row-gap-3">
+                                <div class="row row-gap-3 d-flex justify-content-start flex-row">
                                     {% for weekday_id, weekday_name in weekdays %}
-                                    <div class="col-6 col-md-4 col-lg-3 d-flex flex-column gap-3"
-                                        style="min-height: 300px;">
+                                    <div style="min-height: 300px; width: 14rem;">
                                         <h3 class="pb-2 h4 border-1 border-bottom">{{ weekday_name }}</h3>
 
                                         {% for item in mealplanitems %}
                                         {% if item.weekday == weekday_id %}
-                                        <div class="card">
+                                        <div class="card mb-2">
                                             {% if item.recipe.image_url %}
                                             <img src="{{ item.recipe.image_url }}"
                                                 class="card-img-top d-none d-sm-block" alt="{{ item.recipe.name }}">
