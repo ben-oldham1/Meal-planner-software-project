@@ -56,7 +56,7 @@ class RecipeNutrition(models.Model):
     protein_colour = models.IntegerField(choices=NUTRI_COLOURS)
 
     def __str__(self):
-        return self.name
+        return self.recipe.name + ' Nutrition'
 
 class Ingredient(models.Model):
     name = models.CharField(max_length=255)
