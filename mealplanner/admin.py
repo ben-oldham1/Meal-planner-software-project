@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Recipe, Ingredient, IngredientInRecipe, Tag, RecipeTag, MealPlan, MealPlanItem
+from .models import Recipe, Ingredient, IngredientInRecipe, Tag, RecipeTag, MealPlan, MealPlanItem, RecipeNutrition
 
 # Custom admin for IngredientInRecipe to display related ingredient and recipe names
 class IngredientInRecipeInline(admin.TabularInline):
@@ -56,3 +56,5 @@ class MealPlanAdmin(admin.ModelAdmin):
 class MealPlanItemAdmin(admin.ModelAdmin):
     list_display = ('meal_plan', 'recipe', 'weekday')
     list_filter = ('meal_plan', 'weekday')
+
+admin.site.register(RecipeNutrition)
