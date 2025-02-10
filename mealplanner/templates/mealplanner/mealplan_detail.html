@@ -98,44 +98,30 @@ View mealplan
 
                     <div class="tab-pane fade" id="billing-pill-pane" role="tabpanel" aria-labelledby="billing-pill"
                         tabindex="0">
-                        <div class="row">
-                            <h3>Weekly stats</h3>
+                        <h3>Weekly stats</h3>
 
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Day</th>
-                                        <th scope="col">Kcal</th>
-                                        <th scope="col">Fat</th>
-                                        <th scope="col">Carbs</th>
-                                        <th scope="col">Protein</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <th scope="row">Monday</th>
-                                        <td>1100</td>
-                                        <td>78</td>
-                                        <td>78</td>
-                                        <td>120</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">Tuesday</th>
-                                        <td>1100</td>
-                                        <td>78</td>
-                                        <td>78</td>
-                                        <td>120</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">Wednesday</th>
-                                        <td>1100</td>
-                                        <td>78</td>
-                                        <td>78</td>
-                                        <td>120</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Day</th>
+                                    <th scope="col">Kcal</th>
+                                    <th scope="col">Fat</th>
+                                    <th scope="col">Carbs</th>
+                                    <th scope="col">Protein</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for day_data in nutrition_summary %}
+                                <tr>
+                                    <th scope="row">{{ day_data.day }}</th>
+                                    <td>{{ day_data.calories|floatformat:0 }}</td>
+                                    <td>{{ day_data.fat|floatformat:1 }}</td>
+                                    <td>{{ day_data.carbs|floatformat:1 }}</td>
+                                    <td>{{ day_data.protein|floatformat:1 }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
                     </div>
 
                     <div class="tab-pane fade" id="messages-pill-pane" role="tabpanel" aria-labelledby="messages-pill"
