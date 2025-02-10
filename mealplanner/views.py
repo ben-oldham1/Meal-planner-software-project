@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
 from django.db.models import Q, Sum
 from django.views.decorators.csrf import csrf_exempt
+from collections import defaultdict
 
 import json
 import markdown
@@ -330,12 +331,39 @@ def mealplan_detail(request, mealplan_id):
         (6, 'Sunday'),
     ]
 
+    WEEKDAY_NAMES = dict(WEEKDAY_CHOICES)
+
+    # Initialize nutrition data with all days (ensures all weekdays are included)
+    nutrition_data = {day: {'calories': 0, 'fat': 0, 'carbs': 0, 'protein': 0} for day in WEEKDAY_NAMES}
+
+    # Count occurrences of each recipe per weekday
+    recipe_counts = defaultdict(lambda: defaultdict(int))  # {weekday: {recipe_id: count}}
+
+    for item in mealplanitems:
+        recipe_counts[item.weekday][item.recipe.id] += 1  # Count how many times each recipe appears
+
+    # Populate nutrition data with correct multipliers
+    for weekday, recipes in recipe_counts.items():
+        for recipe_id, count in recipes.items():
+            recipe_nutrition = RecipeNutrition.objects.filter(recipe_id=recipe_id).first()
+            if recipe_nutrition:
+                nutrition_data[weekday]['calories'] += recipe_nutrition.calories * count
+                nutrition_data[weekday]['fat'] += recipe_nutrition.fat * count
+                nutrition_data[weekday]['carbs'] += recipe_nutrition.carbs * count
+                nutrition_data[weekday]['protein'] += recipe_nutrition.protein * count
+
+    # Convert to list for template rendering
+    nutrition_summary = [
+        {'day': WEEKDAY_NAMES[day], **values} for day, values in sorted(nutrition_data.items())
+    ]
+
     context = {
         'active_path': 'mealplans',
         'mealplan': mealplan,
         'mealplanitems': mealplanitems,
         'weekdays': WEEKDAY_CHOICES,
         'shopping_list': shopping_list,
+        'nutrition_summary': nutrition_summary
     }
 
     return render(request, 'mealplanner/mealplan_detail.html', context)
