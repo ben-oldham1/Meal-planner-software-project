@@ -1,13 +1,25 @@
 from django import forms
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
-from .models import Recipe, RecipeNutrition, IngredientInRecipe, Tag, MealPlanItem
+from .models import Recipe, MealPlan, RecipeNutrition, IngredientInRecipe, Tag, MealPlanItem
 
 # New recipe
 class RecipeForm(forms.ModelForm):
     class Meta:
         model = Recipe
         fields = ['name', 'difficulty', 'time_needed', 'public', 'image_url']
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = 'POST'
+        self.helper.add_input(Submit('submit', 'Save Changes', css_class='btn btn-primary'))
+
+# New mealplan
+class MealPlanForm(forms.ModelForm):
+    class Meta:
+        model = MealPlan
+        fields = ['name']
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

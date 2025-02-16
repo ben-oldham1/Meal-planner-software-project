@@ -10,7 +10,7 @@ import markdown
 import requests
 
 from .models import Recipe, RecipeNutrition, IngredientInRecipe, Ingredient, RecipeTag, Tag, MealPlan, MealPlanItem
-from .forms import RecipeForm, RecipeNutritionForm, RecipeInstructionsForm, IngredientForm, TagForm, MealplanRecipeForm
+from .forms import RecipeForm, MealPlanForm, RecipeNutritionForm, RecipeInstructionsForm, IngredientForm, TagForm, MealplanRecipeForm
 from .filters import RecipeFilter
 
 def recipe_list(request):
@@ -119,9 +119,22 @@ def add_recipe(request):
             recipe.user = request.user  # Associate the recipe with the logged-in user
             recipe.save()
             return redirect('edit_recipe', recipe_id=recipe.id)
-    else:
-        form = RecipeForm()
+    
+    form = RecipeForm()
     return render(request, 'mealplanner/add_recipe.html', {'new_recipe_form': form})
+
+@login_required
+def add_mealplan(request):
+    if request.method == 'POST':
+        new_mealplan_form = MealPlanForm(request.POST)
+        if new_mealplan_form.is_valid():
+            mealplan = new_mealplan_form.save(commit=False)
+            mealplan.user = request.user  # Associate the recipe with the logged-in user
+            mealplan.save()
+            return redirect('mealplan_edit', mealplan_id=mealplan.id)
+    
+    form = MealPlanForm()
+    return render(request, 'mealplanner/add_mealplan.html', {'new_mealplan_form': form})
 
 @login_required
 def add_recipe_to_mealplan(request, mealplan_id):
@@ -295,6 +308,7 @@ def mealplan_list(request):
 
     context = {
         'active_path': 'mealplans',
+        'new_mealplan_form': MealPlanForm(),
         'mealplans': mealplans,
     }
 

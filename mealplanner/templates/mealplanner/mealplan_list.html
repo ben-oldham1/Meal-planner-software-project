@@ -1,7 +1,15 @@
 {% extends 'base.html' %}
+{% load crispy_forms_tags %}
 
 {% block title %}
 View mealplans
+{% endblock %}
+
+{% block navbuttons %}
+<!-- New recipe modal -->
+<button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#new-recipe-modal">
+    <i class="bi bi-plus"></i> New mealplan
+</button>
 {% endblock %}
 
 {% block maincontent %}
@@ -14,7 +22,7 @@ View mealplans
                 <a href="{% url 'mealplan_detail' mealplan.id %}" class="link-dark link-underline-opacity-0">
                     <div class="card">
                         <div class="card-body">
-                            <h5 class="card-title">{{ mealplan.name }}</h5>
+                            <h5 class="card-title my-1">{{ mealplan.name }}</h5>
                         </div>
                     </div>
                 </a>
@@ -30,5 +38,34 @@ View mealplans
 
     </div>
 
+</div>
+{% endblock %}
+
+{% block modal %}
+<!-- New recipe modal -->
+<div class="modal fade" id="new-recipe-modal" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modal-title-2"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="modal-title-2">New mealplan</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <form action="{% url 'add_mealplan' %}" method="POST">
+                    {% csrf_token %}
+
+                    {{new_mealplan_form|crispy}}
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">Create mealplan</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

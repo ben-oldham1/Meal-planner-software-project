@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+Create recipe
+{% endblock %}
+
+{% block maincontent %}
+<div class="row">
+    <div class="col-12 col-lg-6">
+
+        <h1>Add New Recipe</h1>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            {{new_recipe_form|crispy}}
+
+            <button type="submit" class="btn btn-primary">Create recipe</button>
+        </form>
+
+        <a href="{% url 'recipe_list' %}">Back to Recipe List</a>
+
+    </div>
+</div>
+{% endblock %}
