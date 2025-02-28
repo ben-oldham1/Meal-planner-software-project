@@ -1,6 +1,8 @@
 from django.test import TestCase
+from unittest.mock import patch
 from django.contrib.auth.models import User
 from datetime import timedelta
+import time
 from .models import Recipe, RecipeNutrition, Ingredient, IngredientInRecipe, Tag, RecipeTag, MealPlan, MealPlanItem
 
 # Run tests using command: python manage.py test
@@ -242,3 +244,43 @@ class MealPlannerTests(TestCase):
         self.client.login(username='testuser', password='testpassword')
         response = self.client.post(reverse('add_mealplan'), {'name': 'New MealPlan'})
         self.assertEqual(response.status_code, 302)  # Redirect after successful post
+
+class RecipePerformanceTest(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='testuser', password='12345')
+        for i in range(100):
+            Recipe.objects.create(
+                user=self.user,
+                name=f'Test Recipe {i}',
+                difficulty=1,
+                time_needed=timedelta(minutes=30),
+                public=True,
+                image_url='http://example.com/image.jpg',
+                instructions='Test instructions'
+            )
+
+    def test_retrieve_100_recipes(self):
+        start_time = time.time()
+        response = self.client.get(reverse('recipe_list'))
+        end_time = time.time()
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue((end_time - start_time) < 2)  # Ensure it takes less than 2 seconds
+
+class ErrorHandlingTest(TestCase):
+    def test_404_error(self):
+        response = self.client.get('/non-existent-page/')
+        self.assertEqual(response.status_code, 404)
+        self.assertContains(response, 'Page not found', status_code=404)
+
+class DashboardLoadTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.user = User.objects.create_user(username='testuser', password='testpassword')
+        self.client.login(username='testuser', password='testpassword')
+
+    def test_dashboard_load_time(self):
+        start_time = time.time()
+        response = self.client.get(reverse('recipe_list'))
+        end_time = time.time()
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue((end_time - start_time) < 3)  # Ensure it takes less than 3 seconds
