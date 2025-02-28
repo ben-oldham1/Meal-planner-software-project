@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block title %}
+Page not found
+{% endblock %}
+
+{% block maincontent %}
+<div class="row my-5">
+
+    <div class="col-12">
+        <h1>Page not found (404)</h1>
+        <p>
+            Sorry, we couldn't find the page you're looking for.
+        </p>
+        <button class="btn btn-primary" onclick="window.history.back()">
+            Go back
+        </button>
+    </div>
+
+</div>
+{% endblock %}
