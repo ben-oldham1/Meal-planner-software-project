@@ -18,9 +18,14 @@ View mealplans
 
         <h2 class="mb-3">My mealplans</h2>
 
-        <div class="row">
+        <p class="w-sm-75 w-md-50">
+            Here you can manage and create your weekly meal plans to suit your preferences and schedule. Simply
+            click on any mealplan to view its details, or create a new one with the button above (top right).
+        </p>
+
+        <div class="row mb-5">
             {% for mealplan in mealplans %}
-            <div class="col-3">
+            <div class="col-12 col-sm-6 col-md-3 g-3">
                 <a href="{% url 'mealplan_detail' mealplan.id %}" class="link-dark link-underline-opacity-0">
                     <div class="card">
                         <div class="card-body">
