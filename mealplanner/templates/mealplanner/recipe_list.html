@@ -7,10 +7,14 @@ View recipes
 {% endblock %}
 
 {% block navbuttons %}
+
+{% if user.is_authenticated %}
 <!-- New recipe modal -->
 <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#new-recipe-modal">
     <i class="bi bi-plus"></i> New recipe
 </button>
+{% endif %}
+
 {% endblock %}
 
 {% block maincontent %}
