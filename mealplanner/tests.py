@@ -2,6 +2,9 @@ from django.test import TestCase
 from django.contrib.auth.models import User
 from datetime import timedelta
 from .models import Recipe, RecipeNutrition, Ingredient, IngredientInRecipe, Tag, RecipeTag, MealPlan, MealPlanItem
+from .views import get_nutrition_data
+import os
+from dotenv import load_dotenv
 
 # Run tests using command: python manage.py test
 
@@ -276,3 +279,23 @@ class MealPlannerTests(TestCase):
         self.client.login(username='testuser', password='testpassword')
         response = self.client.post(reverse('add_mealplan'), {'name': 'New MealPlan'})
         self.assertEqual(response.status_code, 302)  # Redirect after successful post
+
+class APITestCase(TestCase):
+    def test_get_nutrition_data_live(self):
+        # Load environment variables from env file
+        load_dotenv()
+
+        # Call the actual API with a sample query
+        app_id = 'd360df73'  # Replace with your actual app ID
+        app_key = '58f5b744482f26ff48588149cb1508bb'  # Replace with your actual app key
+        query = '1 apple'
+
+        result = get_nutrition_data(query, os.getenv('APP_ID'), os.getenv('APP_KEY'))
+
+        # Assert the response is valid
+        self.assertIsNotNone(result)
+        self.assertIn('foods', result)
+        self.assertGreater(len(result['foods']), 0)
+        self.assertIn('food_name', result['foods'][0])
+        self.assertEqual(result['foods'][0]['food_name'].lower(), 'apple')
+
