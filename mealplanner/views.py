@@ -6,6 +6,8 @@ from django.db.models import Q, Sum
 from django.views.decorators.csrf import csrf_exempt
 from collections import defaultdict
 
+import os
+from dotenv import load_dotenv
 import json
 import markdown
 import requests
@@ -14,6 +16,9 @@ import requests
 from .models import Recipe, RecipeNutrition, IngredientInRecipe, Ingredient, RecipeTag, Tag, MealPlan, MealPlanItem
 from .forms import RecipeForm, MealPlanForm, RecipeNutritionForm, RecipeInstructionsForm, IngredientForm, TagForm, MealplanRecipeForm
 from .filters import RecipeFilter
+
+# Load environment variables from env file
+load_dotenv()
 
 # View to list recipes with optional search and filtering
 def recipe_list(request):
@@ -231,8 +236,8 @@ def get_nutri_for_recipe(request, recipe_id):
     recipe = get_object_or_404(Recipe, id=recipe_id)
     ingredients_in_recipe = IngredientInRecipe.objects.filter(recipe=recipe)
 
-    APP_ID = "d360df73"  # Replace with your actual App ID
-    APP_KEY = "58f5b744482f26ff48588149cb1508bb"  # Replace with your actual App Key
+    APP_ID = os.getenv('APP_ID')
+    APP_KEY = os.getenv('APP_KEY')
 
     # String to store the natural language list of ingredients
     ingredients_natural = ""
