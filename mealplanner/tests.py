@@ -1,5 +1,6 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
+from django.db.models import Sum
 from datetime import timedelta
 from .models import Recipe, RecipeNutrition, Ingredient, IngredientInRecipe, Tag, RecipeTag, MealPlan, MealPlanItem
 from .views import get_nutrition_data
@@ -299,3 +300,50 @@ class APITestCase(TestCase):
         self.assertIn('food_name', result['foods'][0])
         self.assertEqual(result['foods'][0]['food_name'].lower(), 'apple')
 
+class ShoppingListTest(TestCase):
+    def setUp(self):
+        # Create a user
+        self.user = User.objects.create_user(username='testuser', password='12345')
+
+        # Create ingredients
+        self.ingredient1 = Ingredient.objects.create(name='Flour', measurement_unit='g')
+        self.ingredient2 = Ingredient.objects.create(name='Sugar', measurement_unit='g')
+
+        # Create a recipe
+        self.recipe = Recipe.objects.create(
+            user=self.user,
+            name='Cake',
+            difficulty=2,
+            time_needed=timedelta(minutes=30),
+            public=True,
+            instructions='Mix and bake.'
+        )
+
+        # Add ingredients to the recipe
+        IngredientInRecipe.objects.create(recipe=self.recipe, ingredient=self.ingredient1, measurement_amount=200)
+        IngredientInRecipe.objects.create(recipe=self.recipe, ingredient=self.ingredient2, measurement_amount=100)
+
+        # Create a meal plan
+        self.meal_plan = MealPlan.objects.create(user=self.user, name='Weekly Plan')
+
+        # Add the recipe to the meal plan
+        MealPlanItem.objects.create(meal_plan=self.meal_plan, recipe=self.recipe, weekday=0)
+
+    def test_aggregate_shopping_list(self):
+        # Aggregate ingredients for the shopping list
+        shopping_list = (
+            IngredientInRecipe.objects
+            .filter(recipe__meal_plan_items__meal_plan=self.meal_plan)
+            .values('ingredient__name', 'ingredient__measurement_unit')
+            .annotate(total_amount=Sum('measurement_amount'))
+            .order_by('ingredient__name')
+        )
+
+        # Expected results
+        expected_shopping_list = [
+            {'ingredient__name': 'Flour', 'ingredient__measurement_unit': 'g', 'total_amount': 200},
+            {'ingredient__name': 'Sugar', 'ingredient__measurement_unit': 'g', 'total_amount': 100},
+        ]
+
+        # Assert the aggregated shopping list matches the expected results
+        self.assertEqual(list(shopping_list), expected_shopping_list)
