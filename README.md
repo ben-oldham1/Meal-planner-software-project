@@ -21,3 +21,11 @@ python manage.py runserver
 ```
 
 4. Navigate to `http://127.0.0.1:8000/` and you will see the app homepage.
+
+### Running tests
+
+1. Use the built-in Django test command to run the unit tests
+
+```
+python manage.py test
+```
