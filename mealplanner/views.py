@@ -312,6 +312,19 @@ def delete_ingredient(request, ingredient_id):
     ingredient_in_recipe.delete()
     return HttpResponse(status=200)  # Empty response with status 204
 
+# View to delete a recipe
+@login_required
+def delete_recipe(request, recipe_id):
+    # Fetch the recipe and ensure the user has permission to delete it
+    recipe = get_object_or_404(Recipe, id=recipe_id)
+
+    if recipe.user != request.user:
+        return HttpResponseForbidden("You are not allowed to delete this recipe.")
+
+    # Delete the recipe and redirect to the recipe list
+    recipe.delete()
+    return redirect('recipe_list')
+
 # View to add a tag to a recipe
 @login_required
 def add_tag(request, recipe_id):
