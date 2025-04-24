@@ -14,13 +14,20 @@ Follow these instructions to setup the project locally. Commands shown are for m
 source venv/bin/activate
 ```
 
-3. Run the development server:
+3. Create a .env file to store API keys
+```
+# Nutritionix API credentials
+APP_ID=YOUR_APP_ID
+APP_KEY=YOUR_APP_KEY
+```
+
+4. Run the development server:
 
 ```
 python manage.py runserver
 ```
 
-4. Navigate to `http://127.0.0.1:8000/` and you will see the app homepage.
+5. Navigate to `http://127.0.0.1:8000/` and you will see the app homepage.
 
 ### Running tests
 
